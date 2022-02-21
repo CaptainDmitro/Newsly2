@@ -14,14 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.newsly2.model.Article
 
 @Composable
-fun NewsList(news: List<Article>, modifier: Modifier = Modifier) {
+fun NewsList(news: List<Article>, navController: NavController, modifier: Modifier = Modifier) {
     LazyColumn {
         items(news) {
-            ArticleItem(article = it, onClick = { /*TODO*/ })
+            ArticleItem(article = it, onClick = { navController.navigate("details/${it.title}") })
         }
     }
 }

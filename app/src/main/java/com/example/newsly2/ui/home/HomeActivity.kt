@@ -14,6 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.newsly2.ui.details.DetainsScreen
 import com.example.newsly2.ui.theme.Newsly2Theme
 import com.example.newsly2.utils.fromCategory
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +37,8 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    HomeScreen(homeViewModel)
+//                    HomeScreen(homeViewModel)
+                    NavScreen(homeViewModel = homeViewModel)
                 }
             }
         }
@@ -38,7 +46,27 @@ class HomeActivity : ComponentActivity() {
 }
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun NavScreen(
+    homeViewModel: HomeViewModel,
+
+) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen(
+                viewModel = homeViewModel,
+                navController = navController
+            )
+        }
+        composable("details/{title}") { navBackStackEntry ->  DetainsScreen(navBackStackEntry.arguments?.getString("title") ?: "kek") }
+    }
+}
+
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    navController: NavController
+) {
     val news = viewModel.news.collectAsState()
     val updateCategory = viewModel::updateCategory
 
@@ -48,7 +76,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     ) {
         Column {
             CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory)
-            NewsList(news = news.value, modifier = Modifier.padding(it))
+            NewsList(news = news.value,  navController = navController, modifier = Modifier.padding(it))
         }
     }
 }
