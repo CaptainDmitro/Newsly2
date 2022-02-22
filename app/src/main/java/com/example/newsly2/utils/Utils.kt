@@ -1,5 +1,7 @@
 package com.example.newsly2.utils
 
+import com.example.newsly2.model.Article
+
 const val BASE_URL = "https://newsapi.org"
 const val API_KEY = "82a7631624154ead8c07b2b70979b436"
 
@@ -21,4 +23,14 @@ val fromCategory = mapOf(
 val fromLanguage = mapOf(
     "English" to "en",
     "Russian" to "ru"
+)
+
+val fakeArticle = Article(
+    "Author",
+    "Title",
+    "description",
+    "url",
+    "urlToImage",
+    "publishedAt",
+    "content"
 )

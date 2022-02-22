@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsly2.model.Article
 import com.example.newsly2.repository.Repository
+import com.example.newsly2.utils.fakeArticle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,16 +23,18 @@ class HomeViewModel @Inject constructor(
     private val _country = mutableStateOf("US")
     val country: State<String> = _country
 
-    //    val news = repository.topBusinessHeadlines(category = _category.value.lowercase(), country = _country.value.lowercase())
-//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     private val _news = MutableStateFlow<List<Article>>(emptyList())
     val news: StateFlow<List<Article>> = _news
 
+    // TODO: Change that awful implementation of detail view
+    private val _detailsItem = mutableStateOf(fakeArticle)
+    val detailsItem: State<Article> = _detailsItem
+
     init {
-        updateNews()
+        onUpdateNews()
     }
 
-    private fun updateNews() {
+    private fun onUpdateNews() {
         viewModelScope.launch {
             repository.topHeadlines(
                 category = _category.value.lowercase(),
@@ -42,14 +45,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateCountry(country: String) {
-        _country.value = country
-        updateNews()
+    fun onClickDetails(article: Article) {
+        _detailsItem.value = article
     }
 
-    fun updateCategory(category: String) {
+    fun onUpdateCountry(country: String) {
+        _country.value = country
+        onUpdateNews()
+    }
+
+    fun onUpdateCategory(category: String) {
         _category.value = category
-        updateNews()
+        onUpdateNews()
     }
 
 }

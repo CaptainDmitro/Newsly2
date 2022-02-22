@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,13 +15,34 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.newsly2.model.Article
+import com.example.newsly2.navigation.NavDestination
+import com.example.newsly2.utils.fakeArticle
+import com.example.newsly2.utils.fromCategory
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun HomeScreen(
+    homeViewModel: HomeViewModel,
+    navController: NavController
+) {
+    val news = homeViewModel.news.collectAsState()
+    val updateCategory = homeViewModel::onUpdateCategory
+    val onClickDetails: (Article) -> Unit = { article ->
+        homeViewModel.onClickDetails(article)
+        navController.navigate(NavDestination.DETAILS)
+    }
+
+    BackdropScaffold(
+        appBar = { TopAppBar(title = { Text("Newsly2") }) },
+        backLayerContent = { CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory) },
+        frontLayerContent = { NewsList(news = news.value, onClick = onClickDetails) },
+    )
+}
 
 @Composable
-fun NewsList(news: List<Article>, navController: NavController, modifier: Modifier = Modifier) {
-    LazyColumn {
-        items(news) {
-            ArticleItem(article = it, onClick = { navController.navigate("details/${it.title}") })
-        }
+fun CategoryItem(category: String, onClick: (String) -> Unit) {
+    Button(onClick = { onClick(category.lowercase()) }, modifier = Modifier.padding(4.dp)) {
+        Text(category)
     }
 }
 
@@ -40,34 +59,15 @@ fun CategoriesList(categories: List<String>, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun CategoryItem(category: String, onClick: (String) -> Unit) {
-    Button(onClick = { onClick(category.lowercase()) }, modifier = Modifier.padding(4.dp)) {
-        Text(category)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CategoryItemPreview() {
-    val category = "Business"
-    CategoryItem(category = category, onClick = {})
-}
-
-@Composable
-fun ArticleItem(article: Article, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun ArticleItem(article: Article, onClick: (Article) -> Unit, modifier: Modifier = Modifier) {
     Card(modifier = modifier
         .padding(4.dp)
         .wrapContentSize()
         .border(BorderStroke(2.dp, MaterialTheme.colors.primary), RoundedCornerShape(4.dp))
-        .clickable { onClick() }
+        .clickable { onClick(article) }
         .padding(8.dp)
     ) {
         Column {
-//            Box(modifier = modifier
-//                .height(250.dp)
-//                .fillMaxWidth()
-//                .background(MaterialTheme.colors.secondary)
-//            )
             Image(
                 painter = rememberImagePainter(data = article.urlToImage),
                 contentDescription = "",
@@ -87,18 +87,27 @@ fun ArticleItem(article: Article, onClick: () -> Unit, modifier: Modifier = Modi
     }
 }
 
+@Composable
+fun NewsList(news: List<Article>, onClick: (Article) -> Unit, modifier: Modifier = Modifier) {
+    LazyColumn {
+        items(news) {
+            ArticleItem(
+                article = it,
+                onClick = onClick
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ArticleItemPreview() {
-    val article = Article(
-        "Author",
-        "Title",
-        "description",
-        "url",
-        "urlToImage",
-        "publishedAt",
-        "content"
-    )
+    ArticleItem(fakeArticle, {})
+}
 
-    ArticleItem(article, {})
+@Preview(showBackground = true)
+@Composable
+fun CategoryItemPreview() {
+    val category = "Business"
+    CategoryItem(category = category, onClick = {})
 }

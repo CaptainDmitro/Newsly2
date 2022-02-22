@@ -6,6 +6,7 @@ import retrofit2.http.Query
 
 interface NewsApi {
 
+    // TODO: Wrap network response in Result object
     @GET("/v2/top-headlines")
     suspend fun topHeadlines(
         @Query("country") country: String,
