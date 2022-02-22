@@ -10,6 +10,7 @@ import com.example.newsly2.ui.home.DetailsScreen
 import com.example.newsly2.ui.home.HomeScreen
 import com.example.newsly2.ui.home.HomeViewModel
 
+// TODO: to open details use UiState instead
 @Composable
 fun NavScreen() {
     val navController = rememberNavController()

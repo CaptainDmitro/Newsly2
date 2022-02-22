@@ -24,10 +24,11 @@ fun DetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {  },
+                title = { Text("Newsly2") },
                 navigationIcon = { IconButton(onClick = { /*TODO: implement back button*/ }) {
                     Icon(Icons.Filled.ArrowBack, "")
-                } }
+                } },
+                backgroundColor = MaterialTheme.colors.primaryVariant
             )
         }
     ) {

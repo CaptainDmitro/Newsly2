@@ -12,4 +12,8 @@ class RemoteDataSource @Inject constructor(
         category: String
     ) = api.topHeadlines(country = country, category = category)
 
+    suspend fun searchByKeyword(
+        keyword: String
+    ) = api.searchByKeyword(keyword = keyword)
+
 }

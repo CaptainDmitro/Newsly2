@@ -3,7 +3,10 @@ package com.example.newsly2.utils
 import com.example.newsly2.model.Article
 
 const val BASE_URL = "https://newsapi.org"
-const val API_KEY = "82a7631624154ead8c07b2b70979b436"
+const val API_KEY = "e43b347e2bca4c3fa8e584c371f1472b"
+
+const val DEFAULT_CATEGORY = "General"
+const val DEFAULT_COUNTRY = "US"
 
 val fromCountry = mapOf(
     "US" to "us",

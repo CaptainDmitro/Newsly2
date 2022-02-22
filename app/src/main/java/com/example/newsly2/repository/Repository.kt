@@ -20,4 +20,12 @@ class Repository @Inject constructor(
         )
     }.flowOn(Dispatchers.Default)
 
+    fun searchByKeyword(
+        keyword: String
+    ) = flow {
+        emit(
+            remoteDataSource.searchByKeyword(keyword).toDomainModel()
+        )
+    }.flowOn(Dispatchers.Default)
+
 }
