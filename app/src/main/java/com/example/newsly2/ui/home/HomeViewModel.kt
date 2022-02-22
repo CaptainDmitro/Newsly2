@@ -17,7 +17,7 @@ class HomeViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _category = mutableStateOf("Business")
+    private val _category = mutableStateOf("General")
     val category: State<String> = _category
 
     private val _country = mutableStateOf("US")
