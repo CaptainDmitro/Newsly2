@@ -1,34 +1,39 @@
 package com.example.newsly2.ui.home
 
-import android.app.LoaderManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.newsly2.R
 import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
+import com.example.newsly2.ui.common.SearchBar
 import com.example.newsly2.utils.fakeArticle
 import com.example.newsly2.utils.fromCategory
+import com.example.newsly2.utils.navMaskUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -58,11 +63,11 @@ fun HomeScreen(
 
     val updateCategory: (String) -> Unit = { category ->
         backdropState(coroutineScope, backdropScaffoldState)
-        homeViewModel.onUpdateCategory(category)
+        homeViewModel.onChangeCategory(category)
     }
-    val onClickDetails: (Article) -> Unit = { article ->
-        homeViewModel.onClickDetails(article)
-        navController.navigate(NavDestination.DETAILS)
+    val onClickDetails: (String) -> Unit = { url ->
+        val maskUrl = navMaskUrl(url)
+        navController.navigate("${NavDestination.DETAILS}/$maskUrl")
     }
 
     val search: (String) -> Unit = { query ->
@@ -70,10 +75,9 @@ fun HomeScreen(
         backdropState(coroutineScope, backdropScaffoldState)
     }
 
-//    val share: (Context) -> Unit = { context ->
-//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
-//        context.startActivity(intent)
-//    }
+    val favoriteArticle = homeViewModel::onLikeArticle
+    val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
+    val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
 
     HomeScreenContent(
         news = news.value,
@@ -82,6 +86,9 @@ fun HomeScreen(
         updateCategory = updateCategory,
         onClickDetails = onClickDetails,
         search = search,
+        onLikeArticle = favoriteArticle,
+        navToFavorites = navToFavorites,
+        isLiked = isLiked
     )
 }
 
@@ -92,19 +99,27 @@ fun HomeScreenContent(
     currentQuery: String,
     backdropScaffoldState: BackdropScaffoldState,
     updateCategory: (String) -> Unit,
-    onClickDetails: (Article) -> Unit,
-    search: (String) -> Unit
+    onClickDetails: (String) -> Unit,
+    search: (String) -> Unit,
+    onLikeArticle: (Article, Boolean) -> Unit,
+    navToFavorites: () -> Unit,
+    isLiked: (Article) -> Boolean
 ) {
     BackdropScaffold(
         scaffoldState = backdropScaffoldState,
         appBar = { TopAppBar(
-            title = { Text("Newsly2 - ${currentQuery.replaceFirstChar { it.uppercase() }}") },
-            actions = { SearchBar(onSubmit = search) },
+            title = { Text("${stringResource(id = R.string.app_name)} - ${currentQuery.replaceFirstChar { it.uppercase() }}") },
+            actions = {
+                IconButton(onClick = navToFavorites) {
+                    Icon(Icons.Default.Favorite, "")
+                }
+                SearchBar(onSubmit = search)
+            },
             backgroundColor = MaterialTheme.colors.primaryVariant
         ) },
         backLayerContent = { CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory) },
         backLayerBackgroundColor = MaterialTheme.colors.primary,
-        frontLayerContent = { NewsList(news = news, onClick = onClickDetails) },
+        frontLayerContent = { NewsList(news = news, onClick = onClickDetails, onLike = onLikeArticle, isLiked = isLiked) },
     )
 }
 
@@ -132,20 +147,25 @@ fun CategoriesList(categories: List<String>, onClick: (String) -> Unit) {
 }
 
 @Composable
-fun ArticleItem(article: Article, onClick: (Article) -> Unit, modifier: Modifier = Modifier) {
+fun ArticleItem(
+    article: Article,
+    onClick: (String) -> Unit,
+    onLike: (Article, Boolean) -> Unit,
+    isLiked: Boolean,
+    modifier: Modifier = Modifier
+) {
+    // TODO: Should it be hoisted? Is it the correct way to obtain context? Think it over.
     val context = LocalContext.current
+
     Card(modifier = modifier
-        .padding(4.dp)
         .wrapContentSize()
         .clip(RoundedCornerShape(12.dp))
-        .background(Color.White)
-        //.border(BorderStroke(1.dp, MaterialTheme.colors.primaryVariant), RoundedCornerShape(12.dp))
-        .clickable { onClick(article) }
-        //.padding(8.dp)
+        //.background(Color.White)
+        .clickable { onClick(article.url) }
     ) {
         Column {
             Image(
-                painter = rememberImagePainter(data = article.urlToImage),
+                painter = rememberImagePainter(data = article.urlToImage, builder = { placeholder(R.drawable.image_placeholder) }),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
                 modifier = modifier
@@ -172,42 +192,82 @@ fun ArticleItem(article: Article, onClick: (Article) -> Unit, modifier: Modifier
                         .weight(1f)
                         .wrapContentWidth(Alignment.End)
                     ) {
-                        IconButton(
-                            onClick = {
-                                val sendIntent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, article.url)
-                                    type = "text/plain"
-                                }
-                                val shareIntent = Intent.createChooser(sendIntent, null)
-
-                                context.startActivity(shareIntent)
-                            }
-                        ) { Icon(Icons.Default.Share, "") }
+                        SocialButtons(article = article, context = context, onLike = onLike, likedState = isLiked)
                     }
                 }
             }
-
         }
+
     }
 }
 
 @Composable
-fun NewsList(news: List<Article>, onClick: (Article) -> Unit, modifier: Modifier = Modifier) {
-    LazyColumn(modifier = modifier.padding(6.dp)) {
+fun NewsList(
+    news: List<Article>,
+    onClick: (String) -> Unit,
+    onLike: (Article, Boolean) -> Unit,
+    isLiked: (Article) -> Boolean
+) {
+    val columnState = rememberLazyListState()
+    LazyColumn(
+        state = columnState,
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(news) {
             ArticleItem(
                 article = it,
-                onClick = onClick
+                onClick = onClick,
+                onLike = onLike,
+                isLiked = isLiked(it)
             )
         }
     }
 }
 
+@Composable
+fun SocialButtons(
+    article: Article,
+    context: Context,
+    onLike: (Article, Boolean) -> Unit,
+    likedState: Boolean
+) {
+    var isLiked by remember { mutableStateOf(likedState) }
+
+    val likeButtonIcon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp
+
+    IconButton(
+        onClick = {
+            onLike(article, !isLiked)
+            isLiked = !isLiked
+        }
+    ) {
+        Icon(likeButtonIcon, "")
+    }
+    IconButton(
+        onClick = {
+            val sendIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, article.url)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+
+            context.startActivity(shareIntent)
+        }
+    ) { Icon(Icons.Default.Share, "") }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ArticleItemPreview() {
-    ArticleItem(fakeArticle, {})
+    ArticleItem(fakeArticle, {}, {_, _ ->}, false)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SocialButtonsPreview() {
+    SocialButtons(fakeArticle, LocalContext.current, {_, _ ->}, false)
 }
 
 @Preview(showBackground = true)

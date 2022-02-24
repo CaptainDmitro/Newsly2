@@ -2,13 +2,15 @@ package com.example.newsly2.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDirections
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.newsly2.ui.home.DetailsScreen
+import androidx.navigation.navArgument
 import com.example.newsly2.ui.home.HomeScreen
 import com.example.newsly2.ui.home.HomeViewModel
+import com.example.newsly2.ui.details.NewDetailsScreen
+import com.example.newsly2.ui.favorites.FavoriteScreen
 
 // TODO: to open details use UiState instead
 @Composable
@@ -23,8 +25,17 @@ fun NavScreen() {
                 navController = navController
             )
         }
-        composable(NavDestination.DETAILS) {
-            DetailsScreen(homeViewModel = homeViewModel)
+        composable(
+            "${NavDestination.DETAILS}/{${NavDestination.URL_KEY}}",
+            arguments = listOf(navArgument(NavDestination.URL_KEY) { type = NavType.StringType })
+        ) {
+            NewDetailsScreen(
+                navController = navController,
+                url = it.arguments?.getString(NavDestination.URL_KEY) ?: "https://google.com"
+            )
+        }
+        composable(NavDestination.FAVORITE) {
+            FavoriteScreen(homeViewModel = homeViewModel)
         }
     }
 }

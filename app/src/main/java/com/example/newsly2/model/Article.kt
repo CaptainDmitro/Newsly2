@@ -1,6 +1,9 @@
 package com.example.newsly2.model
 
+import java.util.*
+
 data class Article(
+    val id: UUID,
     val author: String,
     val title: String,
     val description: String,

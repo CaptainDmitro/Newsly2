@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Newsly2</string>
+    <string name="no_favorites">No articles liked yet</string>
 </resources>

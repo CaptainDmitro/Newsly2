@@ -5,13 +5,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsly2.database.toDaoModel
 import com.example.newsly2.model.Article
 import com.example.newsly2.repository.Repository
 import com.example.newsly2.utils.DEFAULT_CATEGORY
 import com.example.newsly2.utils.DEFAULT_COUNTRY
-import com.example.newsly2.utils.fakeArticle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,60 +25,92 @@ class HomeViewModel @Inject constructor(
     private val _category = mutableStateOf(DEFAULT_CATEGORY)
     val category: State<String> = _category
 
-    private val _country = mutableStateOf(DEFAULT_COUNTRY)
-    val country: State<String> = _country
-
-    private val _news = MutableStateFlow<List<Article>>(emptyList())
-    val news: StateFlow<List<Article>> = _news
-
-    // TODO: Change that awful implementation of detail view
-    private val _detailsItem = mutableStateOf(fakeArticle)
-    val detailsItem: State<Article> = _detailsItem
+    private val _language = mutableStateOf(DEFAULT_COUNTRY)
+    val language: State<String> = _language
 
     private val _currentQuery = mutableStateOf(category.value)
     val currentQuery: State<String> = _currentQuery
 
+    private val _news = MutableStateFlow<List<Article>>(emptyList())
+    val news: StateFlow<List<Article>> = _news
+
+    private val _favoriteArticles = MutableStateFlow<List<Article>>(emptyList())
+    val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
+
     init {
         onUpdateNews()
+        getFavoriteArticlesFlow()
+    }
+
+    private fun getFavoriteArticlesFlow() {
+        Log.i("HomeViewModel", "getFavoriteArticlesFlow")
+        viewModelScope.launch {
+            repository.getFavoriteArticlesFlow().collect {
+                _favoriteArticles.value = it
+            }
+        }
+    }
+
+    private fun addArticle(article: Article) {
+        Log.i("HomeViewModel", "Adding $article")
+        viewModelScope.launch {
+            repository.addArticle(article)
+        }
+    }
+
+    private fun removeArticle(article: Article) {
+        Log.i("HomeViewModel", "Removing $article")
+        viewModelScope.launch {
+            repository.removeArticle(article.toDaoModel())
+        }
     }
 
     private fun onUpdateNews() {
+        Log.i("HomeViewModel", "Updating news")
         viewModelScope.launch {
             repository.topHeadlines(
                 category = _category.value.lowercase(),
-                country = _country.value.lowercase()
+                country = _language.value.lowercase()
             ).collect {
                 _news.value = it
             }
         }
     }
 
-    private fun updateCurrentQuery(query: String) {
+    private fun onUpdateQuery(query: String) {
         _currentQuery.value = query
     }
 
-    fun onClickDetails(article: Article) {
-        _detailsItem.value = article
+    // TODO: store liked articles locally
+    fun onLikeArticle(article: Article, toAdd: Boolean) {
+        Log.i("HomeViewModel", "Liked, current: $toAdd $article")
+        when(toAdd) {
+            true -> addArticle(article)
+            false -> removeArticle(article)
+        }
     }
 
-    fun onUpdateCountry(country: String) {
-        _country.value = country
+    fun onChangeLanguage(country: String) {
+        _language.value = country
         onUpdateNews()
     }
 
-    fun onUpdateCategory(category: String) {
+    fun onChangeCategory(category: String) {
         _category.value = category
-        updateCurrentQuery(category)
+        onUpdateQuery(category)
         onUpdateNews()
     }
 
     fun onSearch(keyword: String) {
-        updateCurrentQuery("Search: $keyword")
+        onUpdateQuery("Search: $keyword")
         viewModelScope.launch {
             repository.searchByKeyword(keyword).collect {
                 _news.value = it
             }
         }
     }
+
+    // TODO: Would be MUCH better to find by id instead
+    fun isArticleLiked(article: Article) = favoriteArticles.value.contains(article)
 
 }

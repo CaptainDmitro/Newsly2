@@ -1,29 +1,25 @@
-package com.example.newsly2.ui.home
+package com.example.newsly2.ui.common
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
+    modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit,
-    isExpanded: Boolean = false,
-    modifier: Modifier = Modifier
+    isExpanded: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(isExpanded) }
     var text by remember { mutableStateOf("") }
@@ -49,11 +45,11 @@ fun SearchBar(
 @Preview(showBackground = true)
 @Composable
 fun SearchBarExpandedPreview() {
-    SearchBar({}, true)
+    SearchBar(onSubmit = {}, isExpanded = true)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchBarClosedPreview() {
-    SearchBar({})
+    SearchBar(onSubmit = {})
 }
