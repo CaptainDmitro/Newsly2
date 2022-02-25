@@ -2,6 +2,7 @@ package com.example.newsly2.ui.favorites
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,6 @@ fun FavoriteScreen(homeViewModel: HomeViewModel) {
             style = MaterialTheme.typography.h6
         )
     } else {
-        NewsList(news = favArticles.value, onClick = {}, onLike = onLikeArticle, isLiked = isLiked)
+        NewsList(news = favArticles.value, onClick = {}, onLike = onLikeArticle, isLiked = isLiked, state = rememberLazyListState())
     }
 }

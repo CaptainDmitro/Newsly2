@@ -2,24 +2,21 @@ package com.example.newsly2.ui.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -79,7 +76,7 @@ fun HomeScreen(
     val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
     val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
 
-    HomeScreenContent(
+    NewHomeScreenContent(
         news = news.value,
         currentQuery = currentQuery.value,
         backdropScaffoldState = backdropScaffoldState,
@@ -94,7 +91,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeScreenContent(
+fun NewHomeScreenContent(
     news: List<Article>,
     currentQuery: String,
     backdropScaffoldState: BackdropScaffoldState,
@@ -105,22 +102,113 @@ fun HomeScreenContent(
     navToFavorites: () -> Unit,
     isLiked: (Article) -> Boolean
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
+    val contentState = rememberLazyListState()
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        drawerContent = { Drawer() },
+        floatingActionButton = {
+            if (contentState.firstVisibleItemIndex > 0)
+                Floating(onClick = { coroutineScope.launch { contentState.animateScrollToItem(0) } })
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        isFloatingActionButtonDocked = true
+    ) {
+        HomeScreenContent(
+            news = news,
+            contentState = contentState,
+            currentQuery = currentQuery,
+            backdropScaffoldState = backdropScaffoldState,
+            updateCategory = updateCategory,
+            onClickDetails = onClickDetails,
+            search = search,
+            onLikeArticle = onLikeArticle,
+            navToFavorites = navToFavorites,
+            isLiked = isLiked,
+            openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } }
+        )
+    }
+}
+
+@Composable
+fun Floating(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        backgroundColor = MaterialTheme.colors.primaryVariant
+    ) {
+        Icon(Icons.Default.KeyboardArrowUp, "")
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun HomeScreenContent(
+    news: List<Article>,
+    contentState: LazyListState,
+    currentQuery: String,
+    backdropScaffoldState: BackdropScaffoldState,
+    updateCategory: (String) -> Unit,
+    onClickDetails: (String) -> Unit,
+    search: (String) -> Unit,
+    onLikeArticle: (Article, Boolean) -> Unit,
+    navToFavorites: () -> Unit,
+    isLiked: (Article) -> Boolean,
+    openDrawer: () -> Unit
+) {
     BackdropScaffold(
         scaffoldState = backdropScaffoldState,
-        appBar = { TopAppBar(
-            title = { Text("${stringResource(id = R.string.app_name)} - ${currentQuery.replaceFirstChar { it.uppercase() }}") },
-            actions = {
-                IconButton(onClick = navToFavorites) {
-                    Icon(Icons.Default.Favorite, "")
-                }
-                SearchBar(onSubmit = search)
-            },
-            backgroundColor = MaterialTheme.colors.primaryVariant
-        ) },
+        appBar = { TopAppBar(currentQuery, search, navToFavorites, openDrawer) },
         backLayerContent = { CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory) },
         backLayerBackgroundColor = MaterialTheme.colors.primary,
-        frontLayerContent = { NewsList(news = news, onClick = onClickDetails, onLike = onLikeArticle, isLiked = isLiked) },
+        frontLayerContent = { NewsList(state = contentState, news = news, onClick = onClickDetails, onLike = onLikeArticle, isLiked = isLiked) },
     )
+}
+
+@Composable
+fun TopAppBar(
+    currentQuery: String,
+    search: (String) -> Unit,
+    navToFavorites: () -> Unit,
+    openDrawer: () -> Unit
+) {
+    TopAppBar(
+        title = { Text("${stringResource(id = R.string.app_name)}: ${currentQuery.replaceFirstChar { it.uppercase() }}") },
+        actions = { ActionsBar(search, navToFavorites) },
+        navigationIcon = { IconButton(onClick = openDrawer) { Icon(Icons.Default.Menu, "") } },
+        backgroundColor = MaterialTheme.colors.primaryVariant
+    )
+}
+
+@Composable
+fun ActionsBar(
+    search: (String) -> Unit,
+    navToFavorites: () -> Unit
+) {
+    var isSearchExpanded by remember { mutableStateOf(false) }
+    val onExpand: (Boolean) -> Unit = { isSearchExpanded = !isSearchExpanded }
+
+    if (!isSearchExpanded) {
+        IconButton(onClick = navToFavorites) {
+            Icon(Icons.Default.Favorite, "")
+        }
+    }
+    SearchBar(onSubmit = search, isExpanded = isSearchExpanded, onExpand = onExpand)
+}
+
+@Composable
+fun Drawer(modifier: Modifier = Modifier) {
+    Text("Title")
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(start = 24.dp, top = 48.dp)
+    ) {
+        Text("News")
+        Text("Favorites")
+    }
 }
 
 @Composable
@@ -156,6 +244,11 @@ fun ArticleItem(
 ) {
     // TODO: Should it be hoisted? Is it the correct way to obtain context? Think it over.
     val context = LocalContext.current
+    val transition = rememberInfiniteTransition().animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(tween(5000, 1000, easing = LinearOutSlowInEasing), repeatMode = RepeatMode.Reverse)
+    )
 
     Card(modifier = modifier
         .wrapContentSize()
@@ -165,12 +258,13 @@ fun ArticleItem(
     ) {
         Column {
             Image(
-                painter = rememberImagePainter(data = article.urlToImage, builder = { placeholder(R.drawable.image_placeholder) }),
+                painter = rememberImagePainter(data = article.urlToImage, builder = { crossfade(true); placeholder(R.drawable.image_placeholder) }),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
                 modifier = modifier
                     .fillMaxWidth()
-                    .aspectRatio(2f)
+                    .aspectRatio(2f),
+                //alpha = transition.value
             )
             Column(modifier = modifier
                 .border(
@@ -197,18 +291,19 @@ fun ArticleItem(
                 }
             }
         }
-
     }
 }
 
 @Composable
 fun NewsList(
+    state: LazyListState,
     news: List<Article>,
     onClick: (String) -> Unit,
     onLike: (Article, Boolean) -> Unit,
     isLiked: (Article) -> Boolean
 ) {
-    val columnState = rememberLazyListState()
+    //val columnState = rememberLazyListState()
+    val columnState = state
     LazyColumn(
         state = columnState,
         contentPadding = PaddingValues(8.dp),

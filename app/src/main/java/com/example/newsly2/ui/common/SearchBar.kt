@@ -7,7 +7,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,37 +19,37 @@ import androidx.compose.ui.tooling.preview.Preview
 fun SearchBar(
     modifier: Modifier = Modifier,
     onSubmit: (String) -> Unit,
-    isExpanded: Boolean = false
+    isExpanded: Boolean = false,
+    onExpand: (Boolean) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(isExpanded) }
+    //var expanded = isExpanded
     var text by remember { mutableStateOf("") }
 
-    if (expanded) {
+    if (isExpanded) {
         TextField(
             value = text,
             singleLine = true,
             onValueChange = { text = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { onSubmit(text); text = ""; expanded = !expanded }),
-            trailingIcon = { IconButton(onClick = { expanded = !expanded }) { Icon(Icons.Outlined.Close, "") } },
+            keyboardActions = KeyboardActions(onSearch = { onSubmit(text); text = ""; onExpand(isExpanded) }),
+            trailingIcon = { IconButton(onClick = { onExpand(isExpanded) }) { Icon(Icons.Default.Close, "") } },
             modifier = modifier.aspectRatio(3f),
         )
     } else {
-        IconButton(onClick = { expanded = !expanded }) {
+        IconButton(onClick = { onExpand(isExpanded) }) {
             Icon(Icons.Outlined.Search, "")
         }
     }
-
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchBarExpandedPreview() {
-    SearchBar(onSubmit = {}, isExpanded = true)
+    SearchBar(onSubmit = {}, isExpanded = true, onExpand = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SearchBarClosedPreview() {
-    SearchBar(onSubmit = {})
+    SearchBar(onSubmit = {}, onExpand = {})
 }
