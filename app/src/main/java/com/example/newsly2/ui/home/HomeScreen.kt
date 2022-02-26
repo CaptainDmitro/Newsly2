@@ -15,8 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.AlignmentLine
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,7 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
-private fun backdropState(coroutineScope: CoroutineScope, backdropScaffoldState: BackdropScaffoldState, conceal: Boolean = true) {
+private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffoldState: BackdropScaffoldState, conceal: Boolean = true) {
     coroutineScope.launch {
         if (conceal) {
             backdropScaffoldState.conceal()
@@ -59,7 +58,7 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val updateCategory: (String) -> Unit = { category ->
-        backdropState(coroutineScope, backdropScaffoldState)
+        updateBackdropState(coroutineScope, backdropScaffoldState)
         homeViewModel.onChangeCategory(category)
     }
     val onClickDetails: (String) -> Unit = { url ->
@@ -69,7 +68,7 @@ fun HomeScreen(
 
     val search: (String) -> Unit = { query ->
         homeViewModel.onSearch(query)
-        backdropState(coroutineScope, backdropScaffoldState)
+        updateBackdropState(coroutineScope, backdropScaffoldState)
     }
 
     val favoriteArticle = homeViewModel::onLikeArticle
@@ -244,11 +243,11 @@ fun ArticleItem(
 ) {
     // TODO: Should it be hoisted? Is it the correct way to obtain context? Think it over.
     val context = LocalContext.current
-    val transition = rememberInfiniteTransition().animateFloat(
-        initialValue = 1f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(tween(5000, 1000, easing = LinearOutSlowInEasing), repeatMode = RepeatMode.Reverse)
-    )
+//    val transition = rememberInfiniteTransition().animateFloat(
+//        initialValue = 1f,
+//        targetValue = 0f,
+//        animationSpec = infiniteRepeatable(tween(5000, 1000, easing = LinearOutSlowInEasing), repeatMode = RepeatMode.Reverse)
+//    )
 
     Card(modifier = modifier
         .wrapContentSize()
