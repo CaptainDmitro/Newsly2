@@ -8,11 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.newsly2.database.toDaoModel
 import com.example.newsly2.model.Article
 import com.example.newsly2.repository.Repository
+import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.DEFAULT_CATEGORY
 import com.example.newsly2.utils.DEFAULT_COUNTRY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,8 +33,8 @@ class HomeViewModel @Inject constructor(
     private val _currentQuery = mutableStateOf(category.value)
     val currentQuery: State<String> = _currentQuery
 
-    private val _news = MutableStateFlow<List<Article>>(emptyList())
-    val news: StateFlow<List<Article>> = _news
+    private val _news = MutableStateFlow<ApiState>(ApiState.Empty)
+    val news: StateFlow<ApiState> = _news
 
     private val _favoriteArticles = MutableStateFlow<List<Article>>(emptyList())
     val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
@@ -67,12 +69,16 @@ class HomeViewModel @Inject constructor(
 
     private fun onUpdateNews() {
         Log.i("HomeViewModel", "Updating news")
+
         viewModelScope.launch {
+            _news.value = ApiState.Loading
             repository.topHeadlines(
                 category = _category.value.lowercase(),
                 country = _language.value.lowercase()
-            ).collect {
-                _news.value = it
+            ).catch { e ->
+                _news.value = ApiState.Error(e)
+            }.collect { data ->
+                _news.value = ApiState.Success(data)
             }
         }
     }
@@ -105,7 +111,7 @@ class HomeViewModel @Inject constructor(
         onUpdateQuery("Search: $keyword")
         viewModelScope.launch {
             repository.searchByKeyword(keyword).collect {
-                _news.value = it
+                _news.value = ApiState.Success(it)
             }
         }
     }

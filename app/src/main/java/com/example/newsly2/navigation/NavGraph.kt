@@ -12,7 +12,6 @@ import com.example.newsly2.ui.home.HomeViewModel
 import com.example.newsly2.ui.details.NewDetailsScreen
 import com.example.newsly2.ui.favorites.FavoriteScreen
 
-// TODO: to open details use UiState instead
 @Composable
 fun NavScreen() {
     val navController = rememberNavController()
@@ -31,7 +30,7 @@ fun NavScreen() {
         ) {
             NewDetailsScreen(
                 navController = navController,
-                url = it.arguments?.getString(NavDestination.URL_KEY) ?: "https://google.com"
+                url = it.arguments?.getString(NavDestination.URL_KEY)!!
             )
         }
         composable(NavDestination.FAVORITE) {

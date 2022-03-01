@@ -40,5 +40,7 @@ val fakeArticle = Article(
     "content"
 )
 
+
+// TODO: temporary solution to pass links to navControl (slashes are taken as it was a deeplink)
 fun navMaskUrl(url: String) = url.replace("/", "*")
 fun navUnmaskUrl(url: String) = url.replace("*", "/")

@@ -27,10 +27,12 @@ import com.example.newsly2.R
 import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
 import com.example.newsly2.ui.common.SearchBar
+import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.fakeArticle
 import com.example.newsly2.utils.fromCategory
 import com.example.newsly2.utils.navMaskUrl
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -91,7 +93,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NewHomeScreenContent(
-    news: List<Article>,
+    news: ApiState,
     currentQuery: String,
     backdropScaffoldState: BackdropScaffoldState,
     updateCategory: (String) -> Unit,
@@ -99,7 +101,8 @@ fun NewHomeScreenContent(
     search: (String) -> Unit,
     onLikeArticle: (Article, Boolean) -> Unit,
     navToFavorites: () -> Unit,
-    isLiked: (Article) -> Boolean
+    isLiked: (Article) -> Boolean,
+    modifier: Modifier = Modifier
 ) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
@@ -115,19 +118,27 @@ fun NewHomeScreenContent(
         floatingActionButtonPosition = FabPosition.End,
         isFloatingActionButtonDocked = true
     ) {
-        HomeScreenContent(
-            news = news,
-            contentState = contentState,
-            currentQuery = currentQuery,
-            backdropScaffoldState = backdropScaffoldState,
-            updateCategory = updateCategory,
-            onClickDetails = onClickDetails,
-            search = search,
-            onLikeArticle = onLikeArticle,
-            navToFavorites = navToFavorites,
-            isLiked = isLiked,
-            openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } }
-        )
+        when (news) {
+            is ApiState.Empty -> Text("Empty")
+            is ApiState.Success -> {
+                HomeScreenContent(
+                    news = news.data,
+                    contentState = contentState,
+                    currentQuery = currentQuery,
+                    backdropScaffoldState = backdropScaffoldState,
+                    updateCategory = updateCategory,
+                    onClickDetails = onClickDetails,
+                    search = search,
+                    onLikeArticle = onLikeArticle,
+                    navToFavorites = navToFavorites,
+                    isLiked = isLiked,
+                    openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } }
+                )
+            }
+            is ApiState.Error -> { Text(news.message.localizedMessage ?: "Unexpected error") }
+            is ApiState.Loading -> CircularProgressIndicator(modifier = modifier.fillMaxSize(1f).wrapContentSize(Alignment.Center))
+        }
+
     }
 }
 

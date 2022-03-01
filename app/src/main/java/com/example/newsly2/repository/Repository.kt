@@ -22,7 +22,7 @@ class Repository @Inject constructor(
         category: String
     ) = flow {
         emit(
-            remoteDataSource.topHeadlines(country, category).toDomainModel()
+            remoteDataSource.topHeadlines(country, category)
         )
     }.flowOn(Dispatchers.Default)
 
