@@ -1,5 +1,6 @@
 package com.example.newsly2.ui.home
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,9 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.newsly2.database.toDaoModel
 import com.example.newsly2.model.Article
 import com.example.newsly2.repository.Repository
-import com.example.newsly2.utils.ApiState
-import com.example.newsly2.utils.DEFAULT_CATEGORY
-import com.example.newsly2.utils.DEFAULT_COUNTRY
+import com.example.newsly2.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -17,13 +16,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
-    private val _category = mutableStateOf(DEFAULT_CATEGORY)
+    override fun onCleared() {
+        super.onCleared()
+
+        with (sharedPreferences.edit()) {
+            putString(LAST_VISITED_CATEGORY, category.value)
+            putString(SELECTED_COUNTRY, language.value)
+            apply()
+        }
+    }
+
+    private val _category = mutableStateOf(sharedPreferences.getString(LAST_VISITED_CATEGORY, DEFAULT_CATEGORY)!!)
     val category: State<String> = _category
 
-    private val _language = mutableStateOf(DEFAULT_COUNTRY)
+    private val _language = mutableStateOf(sharedPreferences.getString(SELECTED_COUNTRY, DEFAULT_COUNTRY)!!)
     val language: State<String> = _language
 
     private val _currentQuery = mutableStateOf(category.value)
@@ -32,22 +42,11 @@ class HomeViewModel @Inject constructor(
     private val _news = MutableStateFlow<ApiState>(ApiState.Empty)
     val news: StateFlow<ApiState> = _news
 
-    private val _favoriteArticles = MutableStateFlow<List<Article>>(emptyList())
-//    val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
     val favoriteArticles: StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         updateNews()
-        //getFavoriteArticles()
     }
-
-//    private fun getFavoriteArticles() {
-//        viewModelScope.launch {
-//            repository.getFavoriteArticlesFlow().collect {
-//                _favoriteArticles.value = it
-//            }
-//        }
-//    }
 
     private fun addArticleToFavorites(article: Article) {
         viewModelScope.launch {
@@ -108,5 +107,4 @@ class HomeViewModel @Inject constructor(
 
     // TODO: Would be MUCH better to find by id instead
     fun isArticleLiked(article: Article) = favoriteArticles.value.contains(article)
-
 }

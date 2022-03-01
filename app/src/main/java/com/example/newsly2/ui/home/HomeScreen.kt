@@ -215,7 +215,12 @@ fun ActionsBar(
 }
 
 @Composable
-fun Drawer(modifier: Modifier = Modifier) {
+fun Drawer(
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("EN") }
+
     Text("Title")
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -225,6 +230,16 @@ fun Drawer(modifier: Modifier = Modifier) {
     ) {
         Text("News")
         Text("Favorites")
+        Button(onClick = { expanded = true }) {
+            Text(selectedText)
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                listOf("EN", "RU").forEach {
+                    DropdownMenuItem(onClick = { selectedText = it; expanded = false }) {
+                        Text(it)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -275,7 +290,6 @@ fun ArticleItem(
         .wrapContentSize()
         .clip(RoundedCornerShape(12.dp))
         .clickable { onClick(article.url) },
-        elevation = 0.dp,
     ) {
         Column {
             Image(
@@ -288,10 +302,6 @@ fun ArticleItem(
                 //alpha = transition.value
             )
             Column(modifier = modifier
-//                .border(
-//                    BorderStroke(1.dp, MaterialTheme.colors.primaryVariant.copy(alpha = 0.3f)),
-//                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-//                )
                 .padding(8.dp)
             ) {
                 Text(text = article.title, style = MaterialTheme.typography.h6)
@@ -323,7 +333,6 @@ fun NewsList(
     onLike: (Article, Boolean) -> Unit,
     isLiked: (Article) -> Boolean
 ) {
-    //val columnState = rememberLazyListState()
     LazyColumn(
         state = state,
         contentPadding = PaddingValues(10.dp),
