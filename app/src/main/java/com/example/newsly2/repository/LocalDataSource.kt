@@ -30,8 +30,6 @@ class LocalDataSource @Inject constructor(
         articleDao.insertAll(daoArticle)
     }
 
-    suspend fun deleteArticle(articleEntity: ArticleEntity) {
-        articleDao.delete(articleEntity)
-    }
+    suspend fun deleteArticle(articleEntity: ArticleEntity) = articleDao.delete(articleEntity)
 
 }

@@ -1,6 +1,5 @@
 package com.example.newsly2.ui.home
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,10 +11,8 @@ import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.DEFAULT_CATEGORY
 import com.example.newsly2.utils.DEFAULT_COUNTRY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,39 +34,35 @@ class HomeViewModel @Inject constructor(
     val news: StateFlow<ApiState> = _news
 
     private val _favoriteArticles = MutableStateFlow<List<Article>>(emptyList())
-    val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
+//    val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
+    val favoriteArticles: StateFlow<List<Article>> = repository.getFavoriteArticlesFlow().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
-        onUpdateNews()
-        getFavoriteArticlesFlow()
+        updateNews()
+        //getFavoriteArticles()
     }
 
-    private fun getFavoriteArticlesFlow() {
-        Log.i("HomeViewModel", "getFavoriteArticlesFlow")
-        viewModelScope.launch {
-            repository.getFavoriteArticlesFlow().collect {
-                _favoriteArticles.value = it
-            }
-        }
-    }
+//    private fun getFavoriteArticles() {
+//        viewModelScope.launch {
+//            repository.getFavoriteArticlesFlow().collect {
+//                _favoriteArticles.value = it
+//            }
+//        }
+//    }
 
-    private fun addArticle(article: Article) {
-        Log.i("HomeViewModel", "Adding $article")
+    private fun addArticleToFavorites(article: Article) {
         viewModelScope.launch {
             repository.addArticle(article)
         }
     }
 
-    private fun removeArticle(article: Article) {
-        Log.i("HomeViewModel", "Removing $article")
+    private fun removeArticleFromFavorites(article: Article) {
         viewModelScope.launch {
             repository.removeArticle(article.toDaoModel())
         }
     }
 
-    private fun onUpdateNews() {
-        Log.i("HomeViewModel", "Updating news")
-
+    private fun updateNews() {
         viewModelScope.launch {
             _news.value = ApiState.Loading
             repository.topHeadlines(
@@ -83,33 +76,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun onUpdateQuery(query: String) {
+    private fun updateQuery(query: String) {
         _currentQuery.value = query
     }
 
-    // TODO: store liked articles locally
-    fun onLikeArticle(article: Article, toAdd: Boolean) {
-        Log.i("HomeViewModel", "Liked, current: $toAdd $article")
+    fun likeArticle(article: Article, toAdd: Boolean) {
         when(toAdd) {
-            true -> addArticle(article)
-            false -> removeArticle(article)
+            true -> addArticleToFavorites(article)
+            false -> removeArticleFromFavorites(article)
         }
     }
 
-    fun onChangeLanguage(country: String) {
+    fun changeLanguage(country: String) {
         _language.value = country
-        onUpdateNews()
+        updateNews()
     }
 
-    fun onChangeCategory(category: String) {
+    fun changeCategory(category: String) {
         _category.value = category
-        onUpdateQuery(category)
-        onUpdateNews()
+        updateQuery(category)
+        updateNews()
     }
 
-    fun onSearch(keyword: String) {
-        onUpdateQuery("Search: $keyword")
+    fun searchQuery(keyword: String) {
         viewModelScope.launch {
+            updateQuery("Search: $keyword")
             repository.searchByKeyword(keyword).collect {
                 _news.value = ApiState.Success(it)
             }

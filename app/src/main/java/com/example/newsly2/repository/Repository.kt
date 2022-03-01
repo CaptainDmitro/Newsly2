@@ -36,7 +36,7 @@ class Repository @Inject constructor(
 
     suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
 
-    fun getFavoriteArticlesFlow(): Flow<List<Article>> = localDataSource.getAllArticlesFlow().map { it.map { it.toDomainModel() } }
+    fun getFavoriteArticlesFlow(): Flow<List<Article>> = localDataSource.getAllArticlesFlow().map { it.map { article -> article.toDomainModel() } }
 
     suspend fun removeArticle(articleEntity: ArticleEntity) = localDataSource.deleteArticle(articleEntity)
 

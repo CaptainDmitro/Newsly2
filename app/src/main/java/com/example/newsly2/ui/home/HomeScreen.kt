@@ -2,10 +2,13 @@ package com.example.newsly2.ui.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.animation.core.*
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,8 +34,8 @@ import com.example.newsly2.utils.fakeArticle
 import com.example.newsly2.utils.fromCategory
 import com.example.newsly2.utils.navMaskUrl
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffoldState: BackdropScaffoldState, conceal: Boolean = true) {
@@ -61,7 +63,7 @@ fun HomeScreen(
 
     val updateCategory: (String) -> Unit = { category ->
         updateBackdropState(coroutineScope, backdropScaffoldState)
-        homeViewModel.onChangeCategory(category)
+        homeViewModel.changeCategory(category)
     }
     val onClickDetails: (String) -> Unit = { url ->
         val maskUrl = navMaskUrl(url)
@@ -69,11 +71,11 @@ fun HomeScreen(
     }
 
     val search: (String) -> Unit = { query ->
-        homeViewModel.onSearch(query)
+        homeViewModel.searchQuery(query)
         updateBackdropState(coroutineScope, backdropScaffoldState)
     }
 
-    val favoriteArticle = homeViewModel::onLikeArticle
+    val favoriteArticle = homeViewModel::likeArticle
     val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
     val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
 
@@ -136,7 +138,9 @@ fun NewHomeScreenContent(
                 )
             }
             is ApiState.Error -> { Text(news.message.localizedMessage ?: "Unexpected error") }
-            is ApiState.Loading -> CircularProgressIndicator(modifier = modifier.fillMaxSize(1f).wrapContentSize(Alignment.Center))
+            is ApiState.Loading -> CircularProgressIndicator(modifier = modifier
+                .fillMaxSize(1f)
+                .wrapContentSize(Alignment.Center))
         }
 
     }
@@ -260,10 +264,13 @@ fun ArticleItem(
 //        animationSpec = infiniteRepeatable(tween(5000, 1000, easing = LinearOutSlowInEasing), repeatMode = RepeatMode.Reverse)
 //    )
 
+    LaunchedEffect(isLiked) {
+        Log.i("HomeScreen", "${article.title} is $isLiked")
+    }
+
     Card(modifier = modifier
         .wrapContentSize()
         .clip(RoundedCornerShape(12.dp))
-        //.background(Color.White)
         .clickable { onClick(article.url) }
     ) {
         Column {
@@ -313,13 +320,12 @@ fun NewsList(
     isLiked: (Article) -> Boolean
 ) {
     //val columnState = rememberLazyListState()
-    val columnState = state
     LazyColumn(
-        state = columnState,
+        state = state,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(news) {
+        items(news, key = { it.id }) {
             ArticleItem(
                 article = it,
                 onClick = onClick,

@@ -2,28 +2,27 @@ package com.example.newsly2.ui.favorites
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.newsly2.R
-import com.example.newsly2.model.Article
-import com.example.newsly2.ui.home.ArticleItem
 import com.example.newsly2.ui.home.HomeViewModel
 import com.example.newsly2.ui.home.NewsList
+import kotlinx.coroutines.flow.collect
 
 // TODO: Bug: when article is removed from favorite list, the previous one (if >= 2 article) is set to unliked (occurs to display correctly once screen is refreshed)
 
 @Composable
 fun FavoriteScreen(homeViewModel: HomeViewModel) {
     val favArticles = homeViewModel.favoriteArticles.collectAsState()
-    val onLikeArticle = homeViewModel::onLikeArticle
+    val onLikeArticle = homeViewModel::likeArticle
     val isLiked = homeViewModel::isArticleLiked
     val favListState = rememberLazyListState()
 
