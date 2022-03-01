@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,7 @@ import com.example.newsly2.R
 import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
 import com.example.newsly2.ui.common.SearchBar
+import com.example.newsly2.ui.theme.VeryLightGrey
 import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.fakeArticle
 import com.example.newsly2.utils.fromCategory
@@ -177,6 +179,7 @@ fun HomeScreenContent(
         backLayerContent = { CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory) },
         backLayerBackgroundColor = MaterialTheme.colors.primary,
         frontLayerContent = { NewsList(state = contentState, news = news, onClick = onClickDetails, onLike = onLikeArticle, isLiked = isLiked) },
+        frontLayerBackgroundColor = VeryLightGrey
     )
 }
 
@@ -271,7 +274,8 @@ fun ArticleItem(
     Card(modifier = modifier
         .wrapContentSize()
         .clip(RoundedCornerShape(12.dp))
-        .clickable { onClick(article.url) }
+        .clickable { onClick(article.url) },
+        elevation = 0.dp,
     ) {
         Column {
             Image(
@@ -284,10 +288,10 @@ fun ArticleItem(
                 //alpha = transition.value
             )
             Column(modifier = modifier
-                .border(
-                    BorderStroke(1.dp, MaterialTheme.colors.primaryVariant.copy(alpha = 0.3f)),
-                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                )
+//                .border(
+//                    BorderStroke(1.dp, MaterialTheme.colors.primaryVariant.copy(alpha = 0.3f)),
+//                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+//                )
                 .padding(8.dp)
             ) {
                 Text(text = article.title, style = MaterialTheme.typography.h6)
@@ -322,8 +326,8 @@ fun NewsList(
     //val columnState = rememberLazyListState()
     LazyColumn(
         state = state,
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(news, key = { it.id }) {
             ArticleItem(

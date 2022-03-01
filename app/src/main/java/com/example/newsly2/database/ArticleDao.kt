@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface ArticleDao {
 
     @Query("SELECT * FROM article_table")
-    fun getAllFlow(): Flow<List<ArticleEntity>>
+    fun getAll(): Flow<List<ArticleEntity>>
 
     @Insert
     suspend fun insertAll(vararg articles: ArticleEntity)

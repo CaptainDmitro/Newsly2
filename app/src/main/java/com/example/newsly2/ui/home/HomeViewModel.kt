@@ -11,7 +11,6 @@ import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.DEFAULT_CATEGORY
 import com.example.newsly2.utils.DEFAULT_COUNTRY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,7 +34,7 @@ class HomeViewModel @Inject constructor(
 
     private val _favoriteArticles = MutableStateFlow<List<Article>>(emptyList())
 //    val favoriteArticles: StateFlow<List<Article>> = _favoriteArticles
-    val favoriteArticles: StateFlow<List<Article>> = repository.getFavoriteArticlesFlow().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val favoriteArticles: StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         updateNews()

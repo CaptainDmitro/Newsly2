@@ -34,9 +34,9 @@ class Repository @Inject constructor(
         )
     }.flowOn(Dispatchers.Default)
 
-    suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
+    fun getAllArticles(): Flow<List<Article>> = localDataSource.getAllArticles().map { it.map { article -> article.toDomainModel() } }
 
-    fun getFavoriteArticlesFlow(): Flow<List<Article>> = localDataSource.getAllArticlesFlow().map { it.map { article -> article.toDomainModel() } }
+    suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
 
     suspend fun removeArticle(articleEntity: ArticleEntity) = localDataSource.deleteArticle(articleEntity)
 
