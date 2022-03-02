@@ -22,7 +22,7 @@ fun TopAppBar(
     navToFavorites: () -> Unit,
     openDrawer: () -> Unit
 ) {
-    androidx.compose.material.TopAppBar(
+    TopAppBar(
         title = { Text("${stringResource(id = R.string.app_name)}: ${currentQuery.replaceFirstChar { it.uppercase() }}") },
         actions = { ActionsBar(search, navToFavorites) },
         navigationIcon = { IconButton(onClick = openDrawer) { Icon(Icons.Default.Menu, "") } },
@@ -43,5 +43,6 @@ fun ActionsBar(
             Icon(Icons.Default.Favorite, "")
         }
     }
+
     SearchBar(onSubmit = search, isExpanded = isSearchExpanded, onExpand = onExpand)
 }

@@ -17,8 +17,6 @@ import com.example.newsly2.ui.home.HomeViewModel
 import com.example.newsly2.ui.home.NewsList
 import kotlinx.coroutines.flow.collect
 
-// TODO: Bug: when article is removed from favorite list, the previous one (if >= 2 article) is set to unliked (occurs to display correctly once screen is refreshed)
-
 @Composable
 fun FavoriteScreen(homeViewModel: HomeViewModel) {
     val favArticles = homeViewModel.favoriteArticles.collectAsState()
