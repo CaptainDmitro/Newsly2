@@ -9,10 +9,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -29,7 +31,6 @@ import coil.compose.rememberImagePainter
 import com.example.newsly2.R
 import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
-import com.example.newsly2.ui.common.SearchBar
 import com.example.newsly2.ui.theme.VeryLightGrey
 import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.fakeArticle
@@ -37,7 +38,6 @@ import com.example.newsly2.utils.fromCategory
 import com.example.newsly2.utils.navMaskUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffoldState: BackdropScaffoldState, conceal: Boolean = true) {
@@ -60,11 +60,11 @@ fun HomeScreen(
     val selectedCategory = homeViewModel.category
     val currentQuery = homeViewModel.currentQuery
 
-    val backdropScaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
+    val backdropScaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Revealed)
     val coroutineScope = rememberCoroutineScope()
 
     val updateCategory: (String) -> Unit = { category ->
-        updateBackdropState(coroutineScope, backdropScaffoldState)
+        //updateBackdropState(coroutineScope, backdropScaffoldState)
         homeViewModel.changeCategory(category)
     }
     val onClickDetails: (String) -> Unit = { url ->
@@ -74,7 +74,7 @@ fun HomeScreen(
 
     val search: (String) -> Unit = { query ->
         homeViewModel.searchQuery(query)
-        updateBackdropState(coroutineScope, backdropScaffoldState)
+        //updateBackdropState(coroutineScope, backdropScaffoldState)
     }
 
     val favoriteArticle = homeViewModel::likeArticle
@@ -136,7 +136,7 @@ fun NewHomeScreenContent(
                     onLikeArticle = onLikeArticle,
                     navToFavorites = navToFavorites,
                     isLiked = isLiked,
-                    openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } }
+                    openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } },
                 )
             }
             is ApiState.Error -> { Text(news.message.localizedMessage ?: "Unexpected error") }
@@ -171,47 +171,17 @@ fun HomeScreenContent(
     onLikeArticle: (Article, Boolean) -> Unit,
     navToFavorites: () -> Unit,
     isLiked: (Article) -> Boolean,
-    openDrawer: () -> Unit
+    openDrawer: () -> Unit,
 ) {
     BackdropScaffold(
         scaffoldState = backdropScaffoldState,
-        appBar = { TopAppBar(currentQuery, search, navToFavorites, openDrawer) },
+        appBar = { com.example.newsly2.ui.common.TopAppBar(currentQuery, search, navToFavorites, openDrawer) },
         backLayerContent = { CategoriesList(categories = fromCategory.keys.toList(), onClick = updateCategory) },
         backLayerBackgroundColor = MaterialTheme.colors.primary,
         frontLayerContent = { NewsList(state = contentState, news = news, onClick = onClickDetails, onLike = onLikeArticle, isLiked = isLiked) },
-        frontLayerBackgroundColor = VeryLightGrey
+        frontLayerBackgroundColor = VeryLightGrey,
+        frontLayerScrimColor = Color.Unspecified
     )
-}
-
-@Composable
-fun TopAppBar(
-    currentQuery: String,
-    search: (String) -> Unit,
-    navToFavorites: () -> Unit,
-    openDrawer: () -> Unit
-) {
-    TopAppBar(
-        title = { Text("${stringResource(id = R.string.app_name)}: ${currentQuery.replaceFirstChar { it.uppercase() }}") },
-        actions = { ActionsBar(search, navToFavorites) },
-        navigationIcon = { IconButton(onClick = openDrawer) { Icon(Icons.Default.Menu, "") } },
-        backgroundColor = MaterialTheme.colors.primaryVariant
-    )
-}
-
-@Composable
-fun ActionsBar(
-    search: (String) -> Unit,
-    navToFavorites: () -> Unit
-) {
-    var isSearchExpanded by remember { mutableStateOf(false) }
-    val onExpand: (Boolean) -> Unit = { isSearchExpanded = !isSearchExpanded }
-
-    if (!isSearchExpanded) {
-        IconButton(onClick = navToFavorites) {
-            Icon(Icons.Default.Favorite, "")
-        }
-    }
-    SearchBar(onSubmit = search, isExpanded = isSearchExpanded, onExpand = onExpand)
 }
 
 @Composable
@@ -221,21 +191,25 @@ fun Drawer(
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("EN") }
 
-    Text("Title")
-    Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .padding(start = 24.dp, top = 48.dp)
+    Surface(
+        color = MaterialTheme.colors.primarySurface
     ) {
-        Text("News")
-        Text("Favorites")
-        Button(onClick = { expanded = true }) {
-            Text(selectedText)
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                listOf("EN", "RU").forEach {
-                    DropdownMenuItem(onClick = { selectedText = it; expanded = false }) {
-                        Text(it)
+        Text("Title")
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(start = 24.dp, top = 48.dp)
+        ) {
+            Text("News")
+            Text("Favorites")
+            Button(onClick = { expanded = true }) {
+                Text(selectedText)
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    listOf("EN", "RU").forEach {
+                        DropdownMenuItem(onClick = { selectedText = it; expanded = false }) {
+                            Text(it)
+                        }
                     }
                 }
             }
@@ -247,6 +221,7 @@ fun Drawer(
 fun CategoryItem(category: String, onClick: (String) -> Unit) {
     Text(
         text = category,
+        style = MaterialTheme.typography.subtitle2,
         modifier = Modifier
             .padding(16.dp)
             .clickable { onClick(category.lowercase()) }

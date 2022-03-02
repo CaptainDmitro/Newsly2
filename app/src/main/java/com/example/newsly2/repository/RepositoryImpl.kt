@@ -3,6 +3,7 @@ package com.example.newsly2.repository
 import com.example.newsly2.database.ArticleEntity
 import com.example.newsly2.database.toDomainModel
 import com.example.newsly2.model.Article
+import com.example.newsly2.model.Repository
 import com.example.newsly2.network.toDomainModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,12 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 // TODO: add local data source and implement caching
-class Repository @Inject constructor(
+class RepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource
-) {
+) : Repository {
 
-    fun topHeadlines(
+    override fun topHeadlines(
         country: String,
         category: String
     ) = flow {
@@ -26,7 +27,7 @@ class Repository @Inject constructor(
         )
     }.flowOn(Dispatchers.Default)
 
-    fun searchByKeyword(
+    override fun searchByKeyword(
         keyword: String
     ) = flow {
         emit(
@@ -34,10 +35,10 @@ class Repository @Inject constructor(
         )
     }.flowOn(Dispatchers.Default)
 
-    fun getAllArticles(): Flow<List<Article>> = localDataSource.getAllArticles().map { it.map { article -> article.toDomainModel() } }
+    override fun getAllArticles() = localDataSource.getAllArticles().map { it.map { article -> article.toDomainModel() } }
 
-    suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
+    override suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
 
-    suspend fun removeArticle(articleEntity: ArticleEntity) = localDataSource.deleteArticle(articleEntity)
+    override suspend fun removeArticle(articleEntity: ArticleEntity) = localDataSource.deleteArticle(articleEntity)
 
 }

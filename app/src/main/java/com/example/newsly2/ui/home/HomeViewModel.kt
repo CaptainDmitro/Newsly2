@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsly2.database.toDaoModel
 import com.example.newsly2.model.Article
-import com.example.newsly2.repository.Repository
+import com.example.newsly2.model.Repository
 import com.example.newsly2.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
