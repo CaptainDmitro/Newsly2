@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "150810625223",
+    "project_id": "newsly2",
+    "storage_bucket": "newsly2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150810625223:android:f596ee179dd5a099242ae2",
+        "android_client_info": {
+          "package_name": "com.example.newsly2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150810625223-tiv7h5pbkmfsbigo2aggicnbrr6ap5m9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.newsly2",
+            "certificate_hash": "9ce822ac6dc2cd5a1c47b71aea5a822624ed096f"
+          }
+        },
+        {
+          "client_id": "150810625223-rfmle4vu0bgnf31g76o8gn8btfm8h6kb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXJ1-tPT1jYih1rmSAyzuxXLatnmvBOiU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150810625223-rfmle4vu0bgnf31g76o8gn8btfm8h6kb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
