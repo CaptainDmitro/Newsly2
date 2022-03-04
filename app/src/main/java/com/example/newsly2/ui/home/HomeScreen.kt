@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import coil.compose.rememberImagePainter
 import com.example.newsly2.R
 import com.example.newsly2.model.Article
@@ -54,7 +55,8 @@ private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffold
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    navController: NavController
+    navController: NavController,
+    userName: String?
 ) {
     val news = homeViewModel.news.collectAsState()
     val selectedCategory = homeViewModel.category
@@ -90,7 +92,14 @@ fun HomeScreen(
         search = search,
         onLikeArticle = favoriteArticle,
         navToFavorites = navToFavorites,
-        isLiked = isLiked
+        isLiked = isLiked,
+        onLogOut = {
+            navController.navigate(
+                NavDestination.AUTH,
+                NavOptions.Builder().setPopUpTo(NavDestination.HOME, true).build()
+            )
+        },
+        userName = userName
     )
 }
 
@@ -106,6 +115,8 @@ fun NewHomeScreenContent(
     onLikeArticle: (Article, Boolean) -> Unit,
     navToFavorites: () -> Unit,
     isLiked: (Article) -> Boolean,
+    onLogOut: () -> Unit,
+    userName: String?,
     modifier: Modifier = Modifier
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -114,7 +125,7 @@ fun NewHomeScreenContent(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerContent = { Drawer() },
+        drawerContent = { Drawer(userName, onLogOut) },
         floatingActionButton = {
             if (contentState.firstVisibleItemIndex > 0)
                 Floating(onClick = { coroutineScope.launch { contentState.animateScrollToItem(0) } })
@@ -188,6 +199,8 @@ fun HomeScreenContent(
 
 @Composable
 fun Drawer(
+    userName: String?,
+    onLogOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -196,7 +209,7 @@ fun Drawer(
     Surface(
         color = MaterialTheme.colors.primarySurface
     ) {
-        Text("Title")
+        Text("User: ${userName}")
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
@@ -216,6 +229,10 @@ fun Drawer(
                 }
             }
         }
+        Text(
+            text = "Logout",
+            modifier = modifier.clickable { onLogOut() }
+        )
     }
 }
 
