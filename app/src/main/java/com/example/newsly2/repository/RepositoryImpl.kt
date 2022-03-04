@@ -6,7 +6,6 @@ import com.example.newsly2.model.Article
 import com.example.newsly2.model.Repository
 import com.example.newsly2.network.toDomainModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

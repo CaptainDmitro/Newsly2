@@ -120,7 +120,7 @@ fun NewHomeScreenContent(
                 Floating(onClick = { coroutineScope.launch { contentState.animateScrollToItem(0) } })
         },
         floatingActionButtonPosition = FabPosition.End,
-        isFloatingActionButtonDocked = true
+        isFloatingActionButtonDocked = true,
     ) {
         when (news) {
             is ApiState.Empty -> Text("Empty")
@@ -139,7 +139,9 @@ fun NewHomeScreenContent(
                     openDrawer = { coroutineScope.launch { scaffoldState.drawerState.open() } },
                 )
             }
-            is ApiState.Error -> { Text(news.message.localizedMessage ?: "Unexpected error") }
+            is ApiState.Error -> { Text(text = news.message.localizedMessage ?: "Unexpected error", modifier = modifier
+                .fillMaxSize(1f)
+                .wrapContentSize(Alignment.Center)) }
             is ApiState.Loading -> CircularProgressIndicator(modifier = modifier
                 .fillMaxSize(1f)
                 .wrapContentSize(Alignment.Center))
@@ -231,6 +233,7 @@ fun CategoryItem(category: String, onClick: (String) -> Unit) {
 @Composable
 fun CategoriesList(categories: List<String>, onClick: (String) -> Unit) {
     val scrollState = rememberScrollState()
+
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.horizontalScroll(scrollState)
