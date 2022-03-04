@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Newsly2</string>
     <string name="no_favorites">No articles liked yet</string>
+    <string name="server_client_id">150810625223-01c9fab8ckun7vgcaie7giedbbkgpo1q.apps.googleusercontent.com</string>
+    <string name="continue_without_registration">Continue without registration</string>
 </resources>
