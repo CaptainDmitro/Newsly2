@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -77,6 +78,7 @@ fun AuthScreen(
                         imeAction = ImeAction.Next
                     ),
                     isError = loginRequiements,
+                    modifier = Modifier.testTag("LOGIN_TEXTFIELD")
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 OutlinedTextField(
@@ -95,7 +97,8 @@ fun AuthScreen(
                                 passwordText,
                             ), navAction
                         )
-                    })
+                    }),
+                    modifier = Modifier.testTag("PASSWORD_TEXTFIELD")
                 )
                 Spacer(modifier = Modifier.size(24.dp))
                 Row {
