@@ -36,10 +36,7 @@ import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
 import com.example.newsly2.ui.login.AuthViewModel
 import com.example.newsly2.ui.theme.VeryLightGrey
-import com.example.newsly2.utils.ApiState
-import com.example.newsly2.utils.fakeArticle
-import com.example.newsly2.utils.fromCategory
-import com.example.newsly2.utils.navMaskUrl
+import com.example.newsly2.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -87,6 +84,7 @@ fun HomeScreen(
     val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
     val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
     val signOut = authViewModel::signOut
+    val changeLanguage = homeViewModel::changeLanguage
 
     NewHomeScreenContent(
         news = news.value,
@@ -106,7 +104,8 @@ fun HomeScreen(
                        )
                    }
         },
-        userName = userName
+        userName = userName,
+        onLanguageChange = changeLanguage
     )
 }
 
@@ -123,6 +122,7 @@ fun NewHomeScreenContent(
     navToFavorites: () -> Unit,
     isLiked: (Article) -> Boolean,
     onLogOut: () -> Unit,
+    onLanguageChange: (String) -> Unit,
     userName: String?,
     modifier: Modifier = Modifier
 ) {
@@ -132,7 +132,7 @@ fun NewHomeScreenContent(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        drawerContent = { Drawer(userName, onLogOut) },
+        drawerContent = { Drawer(userName, onLogOut, { lang -> onLanguageChange(lang); coroutineScope.launch { scaffoldState.drawerState.close() } }) },
         floatingActionButton = {
             if (contentState.firstVisibleItemIndex > 0)
                 Floating(onClick = { coroutineScope.launch { contentState.animateScrollToItem(0) } })
@@ -208,10 +208,11 @@ fun HomeScreenContent(
 fun Drawer(
     userName: String?,
     onLogOut: () -> Unit,
+    onLanguageChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("EN") }
+    var selectedText by remember { mutableStateOf("English") }
 
     Surface(
         color = MaterialTheme.colors.primarySurface
@@ -227,9 +228,9 @@ fun Drawer(
             Button(onClick = { expanded = true }) {
                 Text(selectedText)
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    listOf("EN", "RU").forEach {
-                        DropdownMenuItem(onClick = { selectedText = it; expanded = false }) {
-                            Text(it)
+                    fromLanguage.keys.forEach { lang ->
+                        DropdownMenuItem(onClick = { selectedText = lang; expanded = false; onLanguageChange(fromLanguage[lang] ?: throw Exception("Unsupported language")) }) {
+                            Text(lang)
                         }
                     }
                 }
