@@ -3,13 +3,15 @@ package com.example.newsly2.ui.home
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -32,6 +34,7 @@ import coil.compose.rememberImagePainter
 import com.example.newsly2.R
 import com.example.newsly2.model.Article
 import com.example.newsly2.navigation.NavDestination
+import com.example.newsly2.ui.login.AuthViewModel
 import com.example.newsly2.ui.theme.VeryLightGrey
 import com.example.newsly2.utils.ApiState
 import com.example.newsly2.utils.fakeArticle
@@ -55,6 +58,7 @@ private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffold
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
+    authViewModel: AuthViewModel,
     navController: NavController,
     userName: String?
 ) {
@@ -82,6 +86,7 @@ fun HomeScreen(
     val favoriteArticle = homeViewModel::likeArticle
     val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
     val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
+    val signOut = authViewModel::signOut
 
     NewHomeScreenContent(
         news = news.value,
@@ -94,10 +99,12 @@ fun HomeScreen(
         navToFavorites = navToFavorites,
         isLiked = isLiked,
         onLogOut = {
-            navController.navigate(
-                NavDestination.AUTH,
-                NavOptions.Builder().setPopUpTo(NavDestination.HOME, true).build()
-            )
+                   signOut {
+                       navController.navigate(
+                           NavDestination.AUTH,
+                           NavOptions.Builder().setPopUpTo("${NavDestination.HOME}/$userName", true).build()
+                       )
+                   }
         },
         userName = userName
     )
@@ -209,7 +216,6 @@ fun Drawer(
     Surface(
         color = MaterialTheme.colors.primarySurface
     ) {
-        Text("User: ${userName}")
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
@@ -229,10 +235,13 @@ fun Drawer(
                 }
             }
         }
-        Text(
-            text = "Logout",
-            modifier = modifier.clickable { onLogOut() }
-        )
+        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp)) {
+            Text(text = userName!!)
+            Button(onClick = onLogOut) {
+                Text("Logout")
+            }
+        }
+
     }
 }
 

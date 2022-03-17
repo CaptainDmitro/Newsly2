@@ -18,14 +18,13 @@ import com.example.newsly2.ui.login.AuthViewModel
 fun NavScreen() {
     val navController = rememberNavController()
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val authViewModel = hiltViewModel<AuthViewModel>()
 
     NavHost(navController = navController, startDestination = NavDestination.AUTH) {
         composable(NavDestination.AUTH) {
-            val authViewModel = hiltViewModel<AuthViewModel>()
             AuthScreen(
                 navController = navController,
                 authViewModel = authViewModel
-
             )
         }
 //        composable(NavDestination.HOME) {
@@ -37,6 +36,7 @@ fun NavScreen() {
         composable("${NavDestination.HOME}/{userName}") {
             HomeScreen(
                 homeViewModel = homeViewModel,
+                authViewModel = authViewModel,
                 navController = navController,
                 it.arguments?.getString("userName")
             )

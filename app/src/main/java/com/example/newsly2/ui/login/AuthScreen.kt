@@ -1,5 +1,6 @@
 package com.example.newsly2.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +42,14 @@ fun AuthScreen(
             "${NavDestination.HOME}/$it",
             NavOptions.Builder().setPopUpTo(NavDestination.AUTH, true).build()
         )
+    }
+    val isLoggedIn = authViewModel.currentUser.collectAsState()
+
+    LaunchedEffect(isLoggedIn) {
+        Log.i("Main", "${isLoggedIn.value?.email}")
+        isLoggedIn.value?.email?.let { email ->
+            if (email.isNotBlank()) navAction(email)
+        }
     }
 
     Surface(

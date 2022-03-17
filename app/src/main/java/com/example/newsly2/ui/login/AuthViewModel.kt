@@ -63,4 +63,10 @@ class AuthViewModel : ViewModel() {
         action(login.login)
     }
 
+    fun signOut(action: () -> Unit) {
+        auth.signOut()
+        currentUser.value = null
+        action()
+    }
+
 }
