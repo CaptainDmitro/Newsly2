@@ -45,7 +45,7 @@ fun AuthScreen(
     }
     val isLoggedIn = authViewModel.currentUser.collectAsState()
 
-    LaunchedEffect(isLoggedIn) {
+    LaunchedEffect(true) {
         Log.i("Main", "${isLoggedIn.value?.email}")
         isLoggedIn.value?.email?.let { email ->
             if (email.isNotBlank()) navAction(email)

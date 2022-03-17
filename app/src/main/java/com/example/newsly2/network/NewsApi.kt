@@ -12,6 +12,7 @@ interface NewsApi {
     suspend fun topHeadlines(
         @Query("country") country: String,
         @Query("category") category: String,
+        @Query("pageSize") pageSize: Int = 100,
         @Query("apiKey") apiKey: String = API_KEY
     ): ApiResponse
 
