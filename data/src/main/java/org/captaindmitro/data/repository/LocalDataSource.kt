@@ -1,8 +1,8 @@
-package com.example.newsly2.repository
+package org.captaindmitro.data.repository
 
-import com.example.newsly2.database.ArticleDao
-import com.example.newsly2.database.ArticleEntity
-import com.example.newsly2.model.Article
+import org.captaindmitro.data.database.ArticleDao
+import org.captaindmitro.data.database.ArticleEntity
+import org.captaindmitro.domain.model.Article
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

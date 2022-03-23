@@ -6,38 +6,21 @@ import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color.RED
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_ALL
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.hilt.work.HiltWorker
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import coil.ImageLoader
-import coil.request.ImageRequest
-import com.example.newsly2.model.Article
-import com.example.newsly2.model.Repository
-import com.example.newsly2.repository.RemoteDataSource
-import com.example.newsly2.repository.RepositoryImpl
+import org.captaindmitro.data.repository.RemoteDataSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 @HiltWorker
-class TestWork @AssistedInject constructor(
+class NewArticlesWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val remoteDataSource: RemoteDataSource

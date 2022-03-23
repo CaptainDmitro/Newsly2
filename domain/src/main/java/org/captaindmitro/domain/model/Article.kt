@@ -1,4 +1,4 @@
-package com.example.newsly2.model
+package org.captaindmitro.domain.model
 
 import java.util.*
 

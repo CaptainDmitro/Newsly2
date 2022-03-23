@@ -1,10 +1,10 @@
-package com.example.newsly2.repository
+package org.captaindmitro.data.repository
 
-import com.example.newsly2.database.ArticleEntity
-import com.example.newsly2.database.toDomainModel
-import com.example.newsly2.model.Article
-import com.example.newsly2.model.Repository
-import com.example.newsly2.network.toDomainModel
+import org.captaindmitro.data.database.toDaoModel
+import org.captaindmitro.data.database.toDomainModel
+import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.model.Repository
+import org.captaindmitro.data.network.toDomainModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -38,6 +38,6 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun addArticle(article: Article) = localDataSource.addArticle(article)
 
-    override suspend fun removeArticle(articleEntity: ArticleEntity) = localDataSource.deleteArticle(articleEntity)
+    override suspend fun removeArticle(article: Article) = localDataSource.deleteArticle(article.toDaoModel())
 
 }

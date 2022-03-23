@@ -1,6 +1,5 @@
-package com.example.newsly2.model
+package org.captaindmitro.domain.model
 
-import com.example.newsly2.database.ArticleEntity
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
@@ -11,8 +10,8 @@ interface Repository {
 
     fun getAllArticles(): Flow<List<Article>>
 
-    suspend fun addArticle(article: Article): Unit
+    suspend fun addArticle(article: Article)
 
-    suspend fun removeArticle(articleEntity: ArticleEntity): Unit
+    suspend fun removeArticle(article: Article)
 
 }

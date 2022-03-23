@@ -1,4 +1,4 @@
-package com.example.newsly2.database
+package org.captaindmitro.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete

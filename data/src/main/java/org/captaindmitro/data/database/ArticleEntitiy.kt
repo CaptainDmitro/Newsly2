@@ -1,9 +1,9 @@
-package com.example.newsly2.database
+package org.captaindmitro.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.newsly2.model.Article
+import org.captaindmitro.domain.model.Article
 import java.util.*
 
 @Entity(tableName = "article_table")

@@ -7,15 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.newsly2.R
 import com.example.newsly2.ui.home.HomeViewModel
 import com.example.newsly2.ui.home.NewsList
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun FavoriteScreen(homeViewModel: HomeViewModel) {

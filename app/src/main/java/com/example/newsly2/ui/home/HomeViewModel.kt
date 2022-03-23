@@ -1,18 +1,14 @@
 package com.example.newsly2.ui.home
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsly2.database.toDaoModel
-import com.example.newsly2.model.Article
-import com.example.newsly2.model.Repository
+import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.model.Repository
 import com.example.newsly2.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,7 +55,7 @@ class HomeViewModel @Inject constructor(
 
     private fun removeArticleFromFavorites(article: Article) {
         viewModelScope.launch {
-            repository.removeArticle(article.toDaoModel())
+            repository.removeArticle(article)
         }
     }
 

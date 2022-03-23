@@ -1,12 +1,8 @@
-package com.example.newsly2.repository
+package org.captaindmitro.data.repository
 
-import com.example.newsly2.model.Article
-import com.example.newsly2.network.NewsApi
-import com.example.newsly2.network.toDomainModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import org.captaindmitro.domain.model.Article
+import org.captaindmitro.data.network.NewsApi
+import org.captaindmitro.data.network.toDomainModel
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(

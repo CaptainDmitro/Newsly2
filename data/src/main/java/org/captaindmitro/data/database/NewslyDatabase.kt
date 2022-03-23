@@ -1,4 +1,4 @@
-package com.example.newsly2.database
+package org.captaindmitro.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

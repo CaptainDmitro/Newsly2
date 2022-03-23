@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import coil.compose.rememberImagePainter
 import com.example.newsly2.R
-import com.example.newsly2.model.Article
+import org.captaindmitro.domain.model.Article
 import com.example.newsly2.navigation.NavDestination
 import com.example.newsly2.ui.login.AuthViewModel
 import com.example.newsly2.ui.theme.VeryLightGrey

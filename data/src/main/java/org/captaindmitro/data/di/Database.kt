@@ -1,9 +1,9 @@
-package com.example.newsly2.di
+package org.captaindmitro.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.newsly2.database.ArticleDao
-import com.example.newsly2.database.NewslyDatabase
+import org.captaindmitro.data.database.ArticleDao
+import org.captaindmitro.data.database.NewslyDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

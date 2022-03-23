@@ -1,10 +1,7 @@
 package com.example.newsly2.utils
 
-import com.example.newsly2.model.Article
+import org.captaindmitro.domain.model.Article
 import java.util.*
-
-const val BASE_URL = "https://newsapi.org"
-const val API_KEY = "e43b347e2bca4c3fa8e584c371f1472b"
 
 const val DEFAULT_CATEGORY = "General"
 const val DEFAULT_COUNTRY = "US"

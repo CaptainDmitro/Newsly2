@@ -9,8 +9,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.core.Is.`is`
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -18,7 +16,7 @@ import org.hamcrest.core.Is.`is`
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 
-class PriceCalc() {
+class PriceCalc {
     fun finalPrice(basePrice: Double): Double {
         return basePrice * 1.5
     }

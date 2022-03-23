@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.newsly2.TestWork.Companion.NOTIFICATION_WORK
+import com.example.newsly2.NewArticlesWork.Companion.NOTIFICATION_WORK
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +27,10 @@ class MainActivity : ComponentActivity() {
 
     private fun init() {
         CoroutineScope(Dispatchers.Default).launch {
-            val saveRequest = PeriodicWorkRequestBuilder<TestWork>(15, TimeUnit.MINUTES).build()
-//            val request = OneTimeWorkRequest.Builder(TestWork::class.java).build()
-
+            val saveRequest = PeriodicWorkRequestBuilder<NewArticlesWork>(15, TimeUnit.MINUTES).build()
             val instanceWorkManager = WorkManager.getInstance(applicationContext)
-//            instanceWorkManager.beginUniqueWork(NOTIFICATION_NAME, ExistingWorkPolicy.REPLACE, request).enqueue()
-        instanceWorkManager.enqueueUniquePeriodicWork(NOTIFICATION_WORK, ExistingPeriodicWorkPolicy.KEEP, saveRequest)
+
+            instanceWorkManager.enqueueUniquePeriodicWork(NOTIFICATION_WORK, ExistingPeriodicWorkPolicy.KEEP, saveRequest)
         }
     }
 }

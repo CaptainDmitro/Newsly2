@@ -1,6 +1,6 @@
-package com.example.newsly2.network
+package org.captaindmitro.data.network
 
-import com.example.newsly2.model.Article
+import org.captaindmitro.domain.model.Article
 import com.squareup.moshi.JsonClass
 import java.util.*
 

@@ -1,11 +1,11 @@
-package com.example.newsly2.di
+package org.captaindmitro.data.di
 
-import com.example.newsly2.network.NewsApi
-import com.example.newsly2.utils.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.captaindmitro.data.BASE_URL
+import org.captaindmitro.data.network.NewsApi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton

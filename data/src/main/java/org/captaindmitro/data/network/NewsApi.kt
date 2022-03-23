@@ -1,6 +1,6 @@
-package com.example.newsly2.network
+package org.captaindmitro.data.network
 
-import com.example.newsly2.utils.API_KEY
+import org.captaindmitro.data.API_KEY
 import retrofit2.http.GET
 import retrofit2.http.Query
 

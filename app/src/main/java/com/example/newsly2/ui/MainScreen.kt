@@ -1,7 +1,6 @@
 package com.example.newsly2
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import com.example.newsly2.navigation.NavScreen
 import com.example.newsly2.ui.theme.Newsly2Theme
 
