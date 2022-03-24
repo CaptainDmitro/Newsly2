@@ -4,7 +4,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
 import org.captaindmitro.data.BASE_URL
 import org.captaindmitro.data.network.NewsApi
 import retrofit2.Retrofit

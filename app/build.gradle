@@ -34,6 +34,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
         compose true
@@ -52,9 +53,6 @@ dependencies {
     implementation project(path: ':domain')
     implementation project(path: ':data')
     def nav_version = "2.4.1"
-    def retrofit_version = "2.9.0"
-    def moshi_version = "1.13.0"
-    def room_version = "2.4.2"
     def hilt_version = "2.41"
     def work_version = "2.7.1"
 

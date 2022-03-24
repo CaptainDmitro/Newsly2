@@ -12,7 +12,7 @@ class AuthViewModel : ViewModel() {
 
     val currentUser = MutableStateFlow(auth.currentUser)
 
-    fun signUpWithEmail(email: String, password: String) = auth.createUserWithEmailAndPassword(email, password).apply {
+    private fun signUpWithEmail(email: String, password: String) = auth.createUserWithEmailAndPassword(email, password).apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
                 currentUser.value = auth.currentUser
@@ -23,7 +23,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun sinInWithEmail(email: String, password: String, action: (String) -> Unit) = auth.signInWithEmailAndPassword(email, password).apply {
+    private fun sinInWithEmail(email: String, password: String, action: (String) -> Unit) = auth.signInWithEmailAndPassword(email, password).apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
                 currentUser.value = auth.currentUser
@@ -35,7 +35,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun sinInWithAnonymously(action: (String) -> Unit) = auth.signInAnonymously().apply {
+    private fun sinInWithAnonymously(action: (String) -> Unit) = auth.signInAnonymously().apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
                 currentUser.value = auth.currentUser

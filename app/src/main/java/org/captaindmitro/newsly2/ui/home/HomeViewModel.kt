@@ -6,13 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.captaindmitro.domain.Article
 import org.captaindmitro.domain.Repository
 import org.captaindmitro.newsly2.utils.*
@@ -38,7 +36,7 @@ class HomeViewModel @Inject constructor(
     val category: State<String> = _category
 
     private val _language = mutableStateOf(sharedPreferences.getString(SELECTED_COUNTRY, DEFAULT_COUNTRY)!!)
-    val language: State<String> = _language
+    private val language: State<String> = _language
 
     private val _currentQuery = mutableStateOf(category.value)
     val currentQuery: State<String> = _currentQuery

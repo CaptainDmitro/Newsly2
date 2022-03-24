@@ -1,4 +1,4 @@
-package com.example.newsly2
+package org.captaindmitro.newsly2.ui
 
 import androidx.compose.runtime.Composable
 import org.captaindmitro.newsly2.navigation.NavScreen

@@ -1,6 +1,5 @@
 package org.captaindmitro.newsly2.ui.home
 
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -60,7 +59,6 @@ fun HomeScreen(
     userName: String?
 ) {
     val news = homeViewModel.news.collectAsState()
-    val selectedCategory = homeViewModel.category
     val currentQuery = homeViewModel.currentQuery
 
     val backdropScaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Revealed)
@@ -77,7 +75,7 @@ fun HomeScreen(
 
     val search: (String) -> Unit = { query ->
         homeViewModel.searchQuery(query)
-        //updateBackdropState(coroutineScope, backdropScaffoldState)
+        updateBackdropState(coroutineScope, backdropScaffoldState)
     }
 
     val favoriteArticle = homeViewModel::likeArticle
@@ -279,8 +277,6 @@ fun ArticleItem(
     isLiked: Boolean,
     modifier: Modifier = Modifier
 ) {
-    // TODO: Should it be hoisted? Is it the correct way to obtain context? Think it over.
-    val context = LocalContext.current
 //    val transition = rememberInfiniteTransition().animateFloat(
 //        initialValue = 1f,
 //        targetValue = 0f,
@@ -322,7 +318,7 @@ fun ArticleItem(
                         .weight(1f)
                         .wrapContentWidth(Alignment.End)
                     ) {
-                        SocialButtons(article = article, context = context, onLike = onLike, likedState = isLiked)
+                        SocialButtons(article = article, onLike = onLike, likedState = isLiked)
                     }
                 }
             }
@@ -357,10 +353,10 @@ fun NewsList(
 @Composable
 fun SocialButtons(
     article: Article,
-    context: Context,
     onLike: (Article, Boolean) -> Unit,
     likedState: Boolean
 ) {
+    val context = LocalContext.current
     var isLiked by remember { mutableStateOf(likedState) }
 
     val likeButtonIcon = if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp
@@ -396,7 +392,7 @@ fun ArticleItemPreview() {
 @Preview(showBackground = true)
 @Composable
 fun SocialButtonsPreview() {
-    SocialButtons(fakeArticle, LocalContext.current, {_, _ ->}, false)
+    SocialButtons(fakeArticle, { _, _ ->}, false)
 }
 
 @Preview(showBackground = true)

@@ -1,10 +1,10 @@
 package org.captaindmitro.newsly2
 
-import com.example.newsly2.ui.login.AuthViewModel
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.mockk
+import org.captaindmitro.newsly2.ui.login.AuthViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
