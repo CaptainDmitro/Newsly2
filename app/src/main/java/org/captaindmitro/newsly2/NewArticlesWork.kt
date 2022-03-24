@@ -16,9 +16,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.newsly2.R
-import org.captaindmitro.data.repository.RemoteDataSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.captaindmitro.data.repository.RemoteDataSource
 
 @HiltWorker
 class NewArticlesWork @AssistedInject constructor(
@@ -37,7 +39,9 @@ class NewArticlesWork @AssistedInject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
         val id = inputData.getInt(NOTIFICATION_ID, 0)
-        val article = remoteDataSource.topHeadlines("us", "general").first()
+        val article = withContext(Dispatchers.IO) {
+            remoteDataSource.topHeadlines("us", "general").first()
+        }
 
         sendNotification(id, article.title, article.description)
 
@@ -77,23 +81,4 @@ class NewArticlesWork @AssistedInject constructor(
 
         notificationManager.notify(id, notification.build())
     }
-
-//    private fun showNotification() {
-//        val intent = Intent(context, MainActivity::class.java).apply {
-//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        }
-//
-//        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-//
-//        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-//            .setContentTitle("Title")
-//            .setContentText("Text")
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            .setContentIntent(pendingIntent)
-//            .setAutoCancel(true)
-//
-//        with (NotificationManagerCompat.from(context)) {
-//            notify(0, builder.build())
-//        }
-//    }
 }
