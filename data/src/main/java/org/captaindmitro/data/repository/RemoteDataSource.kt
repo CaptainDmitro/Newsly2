@@ -1,6 +1,6 @@
 package org.captaindmitro.data.repository
 
-import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.Article
 import org.captaindmitro.data.network.NewsApi
 import org.captaindmitro.data.network.toDomainModel
 import javax.inject.Inject

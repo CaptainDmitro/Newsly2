@@ -5,11 +5,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import org.captaindmitro.domain.model.Article
-import org.captaindmitro.domain.model.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.captaindmitro.domain.Article
+import org.captaindmitro.domain.Repository
 import org.captaindmitro.newsly2.utils.*
 import javax.inject.Inject
 
@@ -62,13 +67,15 @@ class HomeViewModel @Inject constructor(
     private fun updateNews() {
         viewModelScope.launch {
             _news.value = ApiState.Loading
-            repository.topHeadlines(
-                category = _category.value.lowercase(),
-                country = _language.value.lowercase()
-            ).catch { e ->
-                _news.value = ApiState.Error(e)
-            }.collect { data ->
+
+            try {
+                val data = repository.topHeadlines(
+                    category = _category.value.lowercase(),
+                    country = _language.value.lowercase()
+                )
                 _news.value = ApiState.Success(data)
+            } catch (e: Exception) {
+                _news.value = ApiState.Error(e)
             }
         }
     }
@@ -98,8 +105,14 @@ class HomeViewModel @Inject constructor(
     fun searchQuery(keyword: String) {
         viewModelScope.launch {
             updateQuery("Search: $keyword")
-            repository.searchByKeyword(keyword).collect {
-                _news.value = ApiState.Success(it)
+
+            _news.value = ApiState.Loading
+
+            try {
+                val data = repository.searchByKeyword(keyword)
+                _news.value = ApiState.Success(data)
+            } catch (e: Exception) {
+                _news.value = ApiState.Error(e)
             }
         }
     }

@@ -3,7 +3,7 @@ package org.captaindmitro.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.Article
 import java.util.*
 
 @Entity(tableName = "article_table")

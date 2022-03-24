@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import coil.compose.rememberImagePainter
 import com.example.newsly2.R
-import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.Article
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.captaindmitro.newsly2.navigation.NavDestination

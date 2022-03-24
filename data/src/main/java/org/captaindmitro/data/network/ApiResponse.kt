@@ -1,6 +1,6 @@
 package org.captaindmitro.data.network
 
-import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.Article
 import com.squareup.moshi.JsonClass
 import java.util.*
 

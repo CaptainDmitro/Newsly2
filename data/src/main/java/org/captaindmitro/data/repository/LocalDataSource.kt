@@ -2,7 +2,7 @@ package org.captaindmitro.data.repository
 
 import org.captaindmitro.data.database.ArticleDao
 import org.captaindmitro.data.database.ArticleEntity
-import org.captaindmitro.domain.model.Article
+import org.captaindmitro.domain.Article
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
