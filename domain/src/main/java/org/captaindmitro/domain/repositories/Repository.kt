@@ -1,6 +1,7 @@
-package org.captaindmitro.domain
+package org.captaindmitro.domain.repositories
 
 import kotlinx.coroutines.flow.Flow
+import org.captaindmitro.domain.entities.Article
 
 interface Repository {
 

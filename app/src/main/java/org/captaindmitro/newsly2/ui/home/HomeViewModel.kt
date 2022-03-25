@@ -11,15 +11,19 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.captaindmitro.domain.Article
-import org.captaindmitro.domain.Repository
+import org.captaindmitro.domain.entities.Article
+import org.captaindmitro.domain.usecases.*
 import org.captaindmitro.newsly2.utils.*
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase,
+    private val addArticleUseCase: AddArticleUseCase,
+    private val removeArticleUseCase: RemoveArticleUseCase,
+    private val getAllArticlesUseCase: GetAllArticlesUseCase,
+    private val searchByKeywordUseCase: SearchByKeywordUseCase
 ) : ViewModel() {
 
     override fun onCleared() {
@@ -44,7 +48,7 @@ class HomeViewModel @Inject constructor(
     private val _news = MutableStateFlow<ApiState>(ApiState.Empty)
     val news: StateFlow<ApiState> = _news
 
-    val favoriteArticles: StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val favoriteArticles: StateFlow<List<Article>> = getAllArticlesUseCase().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         updateNews()
@@ -52,13 +56,13 @@ class HomeViewModel @Inject constructor(
 
     private fun addArticleToFavorites(article: Article) {
         viewModelScope.launch {
-            repository.addArticle(article)
+            addArticleUseCase(article)
         }
     }
 
     private fun removeArticleFromFavorites(article: Article) {
         viewModelScope.launch {
-            repository.removeArticle(article)
+            removeArticleUseCase(article)
         }
     }
 
@@ -67,7 +71,7 @@ class HomeViewModel @Inject constructor(
             _news.value = ApiState.Loading
 
             try {
-                val data = repository.topHeadlines(
+                val data = getTopHeadlinesUseCase(
                     category = _category.value.lowercase(),
                     country = _language.value.lowercase()
                 )
@@ -107,7 +111,7 @@ class HomeViewModel @Inject constructor(
             _news.value = ApiState.Loading
 
             try {
-                val data = repository.searchByKeyword(keyword)
+                val data = searchByKeywordUseCase(keyword)
                 _news.value = ApiState.Success(data)
             } catch (e: Exception) {
                 _news.value = ApiState.Error(e)

@@ -1,7 +1,7 @@
 package org.captaindmitro.data.network
 
-import org.captaindmitro.domain.Article
 import com.squareup.moshi.JsonClass
+import org.captaindmitro.domain.entities.Article
 import java.util.*
 
 @JsonClass(generateAdapter = true)

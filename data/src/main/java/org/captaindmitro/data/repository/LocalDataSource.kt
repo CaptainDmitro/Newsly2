@@ -1,9 +1,9 @@
 package org.captaindmitro.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import org.captaindmitro.data.database.ArticleDao
 import org.captaindmitro.data.database.ArticleEntity
-import org.captaindmitro.domain.Article
-import kotlinx.coroutines.flow.Flow
+import org.captaindmitro.domain.entities.Article
 import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(

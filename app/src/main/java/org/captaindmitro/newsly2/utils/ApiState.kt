@@ -1,6 +1,6 @@
 package org.captaindmitro.newsly2.utils
 
-import org.captaindmitro.domain.Article
+import org.captaindmitro.domain.entities.Article
 
 sealed class ApiState {
     object Loading : ApiState()

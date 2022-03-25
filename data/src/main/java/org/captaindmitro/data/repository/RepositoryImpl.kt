@@ -6,8 +6,8 @@ import kotlinx.coroutines.withContext
 import org.captaindmitro.data.database.toDaoModel
 import org.captaindmitro.data.database.toDomainModel
 import org.captaindmitro.data.network.toDomainModel
-import org.captaindmitro.domain.Article
-import org.captaindmitro.domain.Repository
+import org.captaindmitro.domain.entities.Article
+import org.captaindmitro.domain.repositories.Repository
 import javax.inject.Inject
 
 // TODO: add local data source and implement caching

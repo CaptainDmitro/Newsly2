@@ -1,4 +1,4 @@
-package org.captaindmitro.domain
+package org.captaindmitro.domain.entities
 
 import java.util.*
 
