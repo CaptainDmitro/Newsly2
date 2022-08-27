@@ -19,7 +19,7 @@ interface SharedPrefsDataSource {
         override suspend fun writeCategory(category: String) {
             with (sharedPreferences.edit()) {
                 putString(LAST_VISITED_CATEGORY, category)
-                apply()
+                commit()
             }
         }
 
@@ -28,7 +28,7 @@ interface SharedPrefsDataSource {
         override suspend fun writeLanguage(language: String) {
             with (sharedPreferences.edit()) {
                 putString(SELECTED_COUNTRY, language)
-                apply()
+                commit()
             }
         }
 

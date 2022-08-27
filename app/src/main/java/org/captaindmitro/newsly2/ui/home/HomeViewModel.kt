@@ -32,8 +32,8 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             withContext(NonCancellable) {
-                writeCategoryUseCase(category.value)
-                writeLanguageUseCase(language.value)
+                writeCategoryUseCase(_category.value)
+                writeLanguageUseCase(_language.value)
             }
         }
     }
@@ -44,8 +44,8 @@ class HomeViewModel @Inject constructor(
     private val _language: MutableStateFlow<String> = MutableStateFlow(readLanguageUseCase())
     val language: StateFlow<String> = _language.asStateFlow()
 
-    private val _currentQuery = mutableStateOf(category.value)
-    val currentQuery: State<String> = _currentQuery
+    private val _currentQuery: MutableStateFlow<String> = MutableStateFlow(category.value)
+    val currentQuery = _currentQuery.asStateFlow()
 
     private val _news = MutableStateFlow<ApiState>(ApiState.Empty)
     val news: StateFlow<ApiState> = _news

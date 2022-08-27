@@ -17,15 +17,5 @@ fun NewDetailsScreen(
     url: String
 ) {
     val unMaskUrl = navUnmaskUrl(url)
-    
-    Column {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.app_name)) },
-            navigationIcon = { IconButton(onClick = { navController.navigateUp() }) {
-                Icon(Icons.Default.ArrowBack, "")
-            } },
-            backgroundColor = MaterialTheme.colors.primaryVariant
-        )
-        WebView(unMaskUrl)
-    }
+    WebView(unMaskUrl)
 }

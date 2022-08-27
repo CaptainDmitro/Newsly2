@@ -2,10 +2,10 @@ package org.captaindmitro.newsly2.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.captaindmitro.newsly2.ui.details.NewDetailsScreen
 import org.captaindmitro.newsly2.ui.favorites.FavoriteScreen
@@ -15,8 +15,9 @@ import org.captaindmitro.newsly2.ui.login.AuthScreen
 import org.captaindmitro.newsly2.ui.login.AuthViewModel
 
 @Composable
-fun NavScreen() {
-    val navController = rememberNavController()
+fun NavScreen(
+    navController: NavHostController
+) {
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val authViewModel = hiltViewModel<AuthViewModel>()
 
@@ -27,12 +28,6 @@ fun NavScreen() {
                 authViewModel = authViewModel
             )
         }
-//        composable(NavDestination.HOME) {
-//            HomeScreen(
-//                homeViewModel = homeViewModel,
-//                navController = navController
-//            )
-//        }
         composable("${NavDestination.HOME}/{userName}") {
             HomeScreen(
                 homeViewModel = homeViewModel,

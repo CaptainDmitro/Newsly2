@@ -1,12 +1,86 @@
 package org.captaindmitro.newsly2.ui
 
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import org.captaindmitro.newsly2.navigation.NavDestination
 import org.captaindmitro.newsly2.navigation.NavScreen
 import org.captaindmitro.newsly2.ui.theme.Newsly2Theme
+import org.captaindmitro.newsly2.utils.fromLanguage
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navController: NavHostController = rememberNavController()
+) {
     Newsly2Theme {
-        NavScreen()
+        Scaffold {
+            NavScreen(navController)
+        }
+    }
+}
+
+@Composable
+fun Fab(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        backgroundColor = MaterialTheme.colors.primaryVariant
+    ) {
+        Icon(Icons.Default.KeyboardArrowUp, "")
+    }
+}
+
+@Composable
+fun Drawer(
+    userName: String?,
+    onLogOut: () -> Unit,
+    onLanguageChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("English") }
+
+    Surface(
+        color = MaterialTheme.colors.primarySurface
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(start = 24.dp, top = 48.dp)
+        ) {
+            Text("News")
+            Text("Favorites")
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(selectedText)
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    fromLanguage.keys.forEach { lang ->
+                        DropdownMenuItem(
+                            onClick = { selectedText = lang; expanded = false; onLanguageChange(
+                            fromLanguage[lang] ?: throw Exception("Unsupported language")) }) {
+                            Text(lang)
+                        }
+                    }
+                }
+            }
+        }
+        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp)) {
+            Text(text = userName!!)
+            OutlinedButton(onClick = onLogOut) {
+                Text("Logout")
+            }
+        }
+
     }
 }

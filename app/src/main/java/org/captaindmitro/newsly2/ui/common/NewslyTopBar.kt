@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.newsly2.R
 
 @Composable
-fun TopAppBar(
+fun NewslyTopBar(
     currentQuery: String,
     search: (String) -> Unit,
     navToFavorites: () -> Unit,

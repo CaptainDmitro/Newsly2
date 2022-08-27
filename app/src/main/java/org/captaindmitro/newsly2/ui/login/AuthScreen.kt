@@ -1,6 +1,5 @@
 package org.captaindmitro.newsly2.ui.login
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -45,7 +44,6 @@ fun AuthScreen(
     val isLoggedIn = authViewModel.currentUser.collectAsState()
 
     LaunchedEffect(true) {
-        Log.i("Main", "${isLoggedIn.value?.email}")
         isLoggedIn.value?.email?.let { email ->
             if (email.isNotBlank()) navAction(email)
         }
@@ -58,7 +56,7 @@ fun AuthScreen(
         var loginText by remember { mutableStateOf("") }
         var passwordText by remember { mutableStateOf("") }
 
-        val loginRequiements = !loginText.contains("@") && loginText.isNotEmpty()
+        val loginRequirements = !loginText.contains("@") && loginText.isNotEmpty()
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -86,7 +84,7 @@ fun AuthScreen(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
-                    isError = loginRequiements,
+                    isError = loginRequirements,
                     modifier = Modifier.testTag("LOGIN_TEXTFIELD")
                 )
                 Spacer(modifier = Modifier.size(8.dp))
