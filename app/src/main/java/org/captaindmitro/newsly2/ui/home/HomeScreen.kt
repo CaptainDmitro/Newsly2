@@ -1,6 +1,7 @@
 package org.captaindmitro.newsly2.ui.home
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,7 +25,6 @@ import org.captaindmitro.newsly2.ui.login.AuthViewModel
 import org.captaindmitro.newsly2.ui.theme.VeryLightGrey
 import org.captaindmitro.newsly2.utils.ApiState
 import org.captaindmitro.newsly2.utils.fromCategory
-import org.captaindmitro.newsly2.utils.navMaskUrl
 
 @OptIn(ExperimentalMaterialApi::class)
 private fun updateBackdropState(coroutineScope: CoroutineScope, backdropScaffoldState: BackdropScaffoldState, conceal: Boolean = true) {
@@ -43,6 +43,12 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     authViewModel: AuthViewModel,
     navController: NavController,
+    onUpdateCategory: (String) -> Unit,
+    onClickDetails: (String) -> Unit,
+    onChangeLanguage: (String) -> Unit,
+    onFavoriteArticle: (Article, Boolean) -> Unit,
+    onNavToFavorites: () -> Unit,
+    isLiked: (Article) -> Boolean,
     userName: String?
 ) {
     val news by homeViewModel.news.collectAsState()
@@ -53,28 +59,13 @@ fun HomeScreen(
     val backdropScaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Revealed)
     val coroutineScope = rememberCoroutineScope()
 
-    val updateCategory: (String) -> Unit = { category ->
-        //updateBackdropState(coroutineScope, backdropScaffoldState)
-        homeViewModel.changeCategory(category)
-    }
-    val onClickDetails: (String) -> Unit = { url ->
-        val maskUrl = navMaskUrl(url)
-        navController.navigate("${NavDestination.DETAILS}/$maskUrl")
-    }
-    val changeLanguage: (String) -> Unit = { newLanguage ->
-        homeViewModel.changeLanguage(newLanguage)
-    }
-    val search: (String) -> Unit = { query ->
+    val onSearch: (String) -> Unit = { query ->
         homeViewModel.searchQuery(query)
         updateBackdropState(coroutineScope, backdropScaffoldState)
     }
     val openDrawer: () -> Unit = {
         coroutineScope.launch { scaffoldState.drawerState.open() }
     }
-
-    val favoriteArticle = homeViewModel::likeArticle
-    val navToFavorites: () -> Unit = { navController.navigate(NavDestination.FAVORITE) }
-    val isLiked: (Article) -> Boolean = homeViewModel::isArticleLiked
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -86,27 +77,26 @@ fun HomeScreen(
             }
         },
         drawerContent = {
-            Drawer(
-                userName = userName,
-                onLogOut = {
-                    authViewModel.signOut { navController.navigate(NavDestination.AUTH) }
-                },
-                onLanguageChange = changeLanguage
-            )
+//            Drawer(
+//                userName = userName,
+//                onLogOut = { authViewModel.signOut { navController.navigate(NavDestination.AUTH) } },
+//                onLanguageChange = onChangeLanguage
+//            )
         }
-    ) {
+    ) { paddingValues ->
         HomeScreenContent(
             news = news,
             contentState = contentListState,
             currentQuery = currentQuery,
             backdropScaffoldState = backdropScaffoldState,
-            updateCategory = updateCategory,
+            updateCategory = onUpdateCategory,
             onClickDetails = onClickDetails,
-            search = search,
-            onLikeArticle = favoriteArticle,
-            navToFavorites = navToFavorites,
+            search = onSearch,
+            onLikeArticle = onFavoriteArticle,
+            navToFavorites = onNavToFavorites,
             isLiked = isLiked,
             openDrawer = openDrawer,
+            modifier = Modifier.padding(paddingValues)
         )
     }
 }
@@ -125,6 +115,7 @@ fun HomeScreenContent(
     navToFavorites: () -> Unit,
     isLiked: (Article) -> Boolean,
     openDrawer: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BackdropScaffold(
         scaffoldState = backdropScaffoldState,
@@ -153,6 +144,7 @@ fun HomeScreenContent(
             }
         },
         frontLayerBackgroundColor = VeryLightGrey,
-        frontLayerScrimColor = Color.Unspecified
+        frontLayerScrimColor = Color.Unspecified,
+        modifier = Modifier.then(modifier)
     )
 }

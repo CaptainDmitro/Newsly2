@@ -1,30 +1,34 @@
 package org.captaindmitro.newsly2.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.launch
 import org.captaindmitro.newsly2.navigation.NavDestination
 import org.captaindmitro.newsly2.navigation.NavScreen
 import org.captaindmitro.newsly2.ui.theme.Newsly2Theme
 import org.captaindmitro.newsly2.utils.fromLanguage
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberAnimatedNavController()
 ) {
     Newsly2Theme {
-        Scaffold {
-            NavScreen(navController)
+        Scaffold { paddingValues ->
+            NavScreen(navController, modifier = Modifier.padding(paddingValues))
         }
     }
 }
@@ -46,7 +50,7 @@ fun Drawer(
     onLanguageChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by mutableStateOf(false)
     var selectedText by remember { mutableStateOf("English") }
 
     Surface(
