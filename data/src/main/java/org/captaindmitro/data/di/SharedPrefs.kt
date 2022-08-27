@@ -18,8 +18,4 @@ object SharedPrefs {
     @Provides
     fun provideSharedPrefs(@ApplicationContext context: Context): SharedPreferences = context.getSharedPreferences("LAST_CATEGORY", Context.MODE_PRIVATE)
 
-    @Singleton
-    @Provides
-    fun provideSharedPrefsDataSource(sharedPreferences: SharedPreferences): SharedPrefsDataSource = SharedPrefsDataSource.Base(sharedPreferences)
-
 }

@@ -1,6 +1,5 @@
 package org.captaindmitro.newsly2.ui.home
 
-import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,12 +11,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.captaindmitro.domain.entities.Article
 import org.captaindmitro.domain.usecases.*
-import org.captaindmitro.newsly2.utils.*
+import org.captaindmitro.newsly2.utils.ApiState
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
     private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase,
     private val addArticleUseCase: AddArticleUseCase,
     private val removeArticleUseCase: RemoveArticleUseCase,
@@ -52,7 +50,7 @@ class HomeViewModel @Inject constructor(
     private val _news = MutableStateFlow<ApiState>(ApiState.Empty)
     val news: StateFlow<ApiState> = _news
 
-    val favoriteArticles: StateFlow<List<Article>> = getAllArticlesUseCase().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val favoriteArticles: StateFlow<List<Article>> = getAllArticlesUseCase().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
         updateNews()
@@ -123,6 +121,5 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // TODO: Would be MUCH better to find by id instead
     fun isArticleLiked(article: Article) = favoriteArticles.value.contains(article)
 }

@@ -2,21 +2,27 @@ package org.captaindmitro.newsly2.ui.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val auth: FirebaseAuth
+) : ViewModel() {
 
-    private val auth = Firebase.auth
-
-    val currentUser = MutableStateFlow(auth.currentUser)
+    private var _currentUser: MutableStateFlow<FirebaseUser?> = MutableStateFlow(auth.currentUser)
+    val currentUser = _currentUser.asStateFlow()
 
     private fun signUpWithEmail(email: String, password: String) = auth.createUserWithEmailAndPassword(email, password).apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
-                currentUser.value = auth.currentUser
-                Log.i("Main", "Successful reg")
+                _currentUser.value = auth.currentUser
             } else {
                 Log.i("Main", "Error reg ${it.exception}")
             }
@@ -26,7 +32,7 @@ class AuthViewModel : ViewModel() {
     private fun sinInWithEmail(email: String, password: String, action: (String) -> Unit) = auth.signInWithEmailAndPassword(email, password).apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
-                currentUser.value = auth.currentUser
+                _currentUser.value = auth.currentUser
                 Log.i("Main", "Successful login")
                 action(email)
             } else {
@@ -38,7 +44,7 @@ class AuthViewModel : ViewModel() {
     private fun sinInWithAnonymously(action: (String) -> Unit) = auth.signInAnonymously().apply {
         addOnCompleteListener {
             if (it.isSuccessful) {
-                currentUser.value = auth.currentUser
+                _currentUser.value = auth.currentUser
                 Log.i("Main", "Successful login")
                 action("Anonymous")
             } else {
@@ -65,7 +71,6 @@ class AuthViewModel : ViewModel() {
 
     fun signOut(action: () -> Unit) {
         auth.signOut()
-        currentUser.value = null
         action()
     }
 

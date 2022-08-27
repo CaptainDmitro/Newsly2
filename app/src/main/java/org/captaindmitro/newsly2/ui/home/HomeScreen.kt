@@ -283,10 +283,6 @@ fun ArticleItem(
 //        animationSpec = infiniteRepeatable(tween(5000, 1000, easing = LinearOutSlowInEasing), repeatMode = RepeatMode.Reverse)
 //    )
 
-    LaunchedEffect(isLiked) {
-        Log.i("HomeScreen", "${article.title} is $isLiked")
-    }
-
     Card(modifier = modifier
         .wrapContentSize()
         .clip(RoundedCornerShape(12.dp))
