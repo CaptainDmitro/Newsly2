@@ -10,17 +10,20 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
 object Auth {
 
+    @Singleton
     @Provides
     fun provideGsoOptions(@ApplicationContext context: Context): GoogleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestIdToken(context.getString(R.string.server_client_id))
         .requestEmail()
         .build()
 
+    @Singleton
     @Provides
     fun provideGsoClient(@ApplicationContext context: Context): GoogleSignInClient = GoogleSignIn.getClient(context, provideGsoOptions(context))
 

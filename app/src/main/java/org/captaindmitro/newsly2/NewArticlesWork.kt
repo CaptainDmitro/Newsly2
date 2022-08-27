@@ -22,11 +22,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.captaindmitro.data.DEFAULT_CATEGORY
+import org.captaindmitro.data.DEFAULT_COUNTRY
+import org.captaindmitro.data.LAST_VISITED_CATEGORY
+import org.captaindmitro.data.SELECTED_COUNTRY
 import org.captaindmitro.data.repository.RemoteDataSource
-import org.captaindmitro.newsly2.utils.DEFAULT_CATEGORY
-import org.captaindmitro.newsly2.utils.DEFAULT_COUNTRY
-import org.captaindmitro.newsly2.utils.LAST_VISITED_CATEGORY
-import org.captaindmitro.newsly2.utils.SELECTED_COUNTRY
 
 @HiltWorker
 class NewArticlesWork @AssistedInject constructor(

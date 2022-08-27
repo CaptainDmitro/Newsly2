@@ -8,6 +8,8 @@ android {
     compileSdk 32
 
     defaultConfig {
+        minSdk 23
+        targetSdk 32
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += [

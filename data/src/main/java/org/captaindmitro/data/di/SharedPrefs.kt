@@ -1,4 +1,4 @@
-package org.captaindmitro.newsly2.di
+package org.captaindmitro.data.di
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import org.captaindmitro.data.repository.SharedPrefsDataSource
 import javax.inject.Singleton
 
 @Module
@@ -16,5 +17,9 @@ object SharedPrefs {
     @Singleton
     @Provides
     fun provideSharedPrefs(@ApplicationContext context: Context): SharedPreferences = context.getSharedPreferences("LAST_CATEGORY", Context.MODE_PRIVATE)
+
+    @Singleton
+    @Provides
+    fun provideSharedPrefsDataSource(sharedPreferences: SharedPreferences): SharedPrefsDataSource = SharedPrefsDataSource.Base(sharedPreferences)
 
 }

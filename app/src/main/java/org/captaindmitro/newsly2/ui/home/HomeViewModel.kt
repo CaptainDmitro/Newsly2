@@ -6,11 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.captaindmitro.domain.entities.Article
 import org.captaindmitro.domain.usecases.*
 import org.captaindmitro.newsly2.utils.*
@@ -23,24 +22,29 @@ class HomeViewModel @Inject constructor(
     private val addArticleUseCase: AddArticleUseCase,
     private val removeArticleUseCase: RemoveArticleUseCase,
     private val getAllArticlesUseCase: GetAllArticlesUseCase,
-    private val searchByKeywordUseCase: SearchByKeywordUseCase
+    private val searchByKeywordUseCase: SearchByKeywordUseCase,
+    private val writeCategoryUseCase: WriteCategoryUseCase,
+    private val readCategoryUseCase: GetCategoryUseCase,
+    private val writeLanguageUseCase: WriteLanguageUseCase,
+    private val readLanguageUseCase: GetLanguageUseCase
 ) : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
 
-        with (sharedPreferences.edit()) {
-            putString(LAST_VISITED_CATEGORY, category.value)
-            putString(SELECTED_COUNTRY, language.value)
-            apply()
+        viewModelScope.launch {
+            withContext(NonCancellable) {
+                writeCategoryUseCase(category.value)
+                writeLanguageUseCase(language.value)
+            }
         }
     }
 
-    private val _category = mutableStateOf(sharedPreferences.getString(LAST_VISITED_CATEGORY, DEFAULT_CATEGORY)!!)
-    val category: State<String> = _category
+    private val _category: MutableStateFlow<String> = MutableStateFlow(readCategoryUseCase())
+    val category: StateFlow<String> = _category.asStateFlow()
 
-    private val _language = mutableStateOf(sharedPreferences.getString(SELECTED_COUNTRY, DEFAULT_COUNTRY)!!)
-    private val language: State<String> = _language
+    private val _language: MutableStateFlow<String> = MutableStateFlow(readLanguageUseCase())
+    val language: StateFlow<String> = _language.asStateFlow()
 
     private val _currentQuery = mutableStateOf(category.value)
     val currentQuery: State<String> = _currentQuery
