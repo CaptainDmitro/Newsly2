@@ -1,6 +1,6 @@
 package org.captaindmitro.data.network
 
-import org.captaindmitro.data.API_KEY
+import org.captaindmitro.data.BuildConfig
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,13 +13,13 @@ interface NewsApi {
         @Query("country") country: String,
         @Query("category") category: String,
         @Query("pageSize") pageSize: Int = 100,
-        @Query("apiKey") apiKey: String = API_KEY
+        @Query("apiKey") apiKey: String = BuildConfig.API_KEY
     ): ApiResponse
 
     @GET("/v2/everything")
     suspend fun searchByKeyword(
         @Query("q") keyword: String,
-        @Query("apiKey") apiKey: String = API_KEY
+        @Query("apiKey") apiKey: String = BuildConfig.API_KEY
     ): ApiResponse
 
 }

@@ -18,6 +18,10 @@ android {
                         "room.expandProjection":"true"]
             }
         }
+
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+        buildConfigField "String", "API_KEY", localProperties['apiKey']
     }
 }
 
