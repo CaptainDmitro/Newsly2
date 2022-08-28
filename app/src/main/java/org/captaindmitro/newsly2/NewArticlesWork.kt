@@ -7,7 +7,6 @@ import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color.RED
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -20,20 +19,18 @@ import androidx.work.WorkerParameters
 import com.example.newsly2.R
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.captaindmitro.data.DEFAULT_CATEGORY
-import org.captaindmitro.data.DEFAULT_COUNTRY
-import org.captaindmitro.data.LAST_VISITED_CATEGORY
-import org.captaindmitro.data.SELECTED_COUNTRY
-import org.captaindmitro.data.repository.RemoteDataSource
+import org.captaindmitro.domain.di.IoDispatcher
+import org.captaindmitro.domain.repositories.Repository
 
 @HiltWorker
 class NewArticlesWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val remoteDataSource: RemoteDataSource,
-    private val sharedPreferences: SharedPreferences
+    private val repository: Repository,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : CoroutineWorker(context, workerParameters) {
 
     companion object {
@@ -47,11 +44,11 @@ class NewArticlesWork @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val id = inputData.getInt(NOTIFICATION_ID, 0)
 
-        val country = sharedPreferences.getString(SELECTED_COUNTRY, DEFAULT_COUNTRY)!!
-        val category = sharedPreferences.getString(LAST_VISITED_CATEGORY, DEFAULT_CATEGORY)!!
+        val country = repository.readLanguage()
+        val category = repository.readCategory()
 
-        val article = withContext(Dispatchers.IO) {
-            remoteDataSource.topHeadlines(country, category).first()
+        val article = withContext(dispatcher) {
+            repository.topHeadlines(country, category).first()
         }
 
         sendNotification(id, article.title, article.description)

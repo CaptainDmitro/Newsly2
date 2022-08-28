@@ -4,13 +4,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.captaindmitro.data.network.ApiResponse
 import org.captaindmitro.data.network.NewsApi
-import org.captaindmitro.data.network.toDomainModel
-import org.captaindmitro.domain.entities.Article
 import javax.inject.Inject
 
 interface RemoteDataSource {
 
-    suspend fun topHeadlines(country: String, category: String): List<Article>
+    suspend fun topHeadlines(country: String, category: String): ApiResponse
     suspend fun searchByKeyword(keyword: String): ApiResponse
 
     class Base @Inject constructor(
@@ -20,8 +18,8 @@ interface RemoteDataSource {
         override suspend fun topHeadlines(
             country: String,
             category: String
-        ): List<Article> = withContext(dispatcher) {
-            api.topHeadlines(country, category).toDomainModel()
+        ): ApiResponse = withContext(dispatcher) {
+            api.topHeadlines(country, category)
         }
 
         override suspend fun searchByKeyword(keyword: String) = withContext(dispatcher) {
